@@ -3,8 +3,30 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
-import { createAccount, signupSchema, type SignupInput } from '@/lib/actions/auth';
 import { z } from 'zod';
+
+const signupSchema = z.object({
+  username: z
+    .string()
+    .min(3, 'Username must be at least 3 characters')
+    .max(20, 'Username must be less than 20 characters')
+    .regex(/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores'),
+  email: z.string().email('Please enter a valid email address'),
+  password: z
+    .string()
+    .min(6, 'Password must be at least 6 characters')
+    .max(100, 'Password must be less than 100 characters'),
+  confirmPassword: z.string(),
+  displayName: z
+    .string()
+    .min(1, 'Display name is required')
+    .max(50, 'Display name must be less than 50 characters'),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ['confirmPassword'],
+});
+
+type SignupInput = z.infer<typeof signupSchema>;
 
 export default function SignupPage() {
   const router = useRouter();
@@ -25,9 +47,19 @@ export default function SignupPage() {
 
     try {
       const validatedData = signupSchema.parse(formData);
-      const result = await createAccount(validatedData);
+      
+      // Call the signup API
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(validatedData),
+      });
 
-      if (result.error) {
+      const result = await response.json();
+
+      if (!response.ok) {
         if (result.details) {
           const fieldErrors: Record<string, string> = {};
           result.details.forEach((error: z.ZodIssue) => {

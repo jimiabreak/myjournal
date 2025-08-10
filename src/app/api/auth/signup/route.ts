@@ -1,10 +1,9 @@
-'use server';
-
+import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcrypt';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 
-export const signupSchema = z.object({
+const signupSchema = z.object({
   username: z
     .string()
     .min(3, 'Username must be at least 3 characters')
@@ -25,17 +24,10 @@ export const signupSchema = z.object({
   path: ['confirmPassword'],
 });
 
-export const loginSchema = z.object({
-  identifier: z.string().min(1, 'Username or email is required'),
-  password: z.string().min(1, 'Password is required'),
-});
-
-export type SignupInput = z.infer<typeof signupSchema>;
-export type LoginInput = z.infer<typeof loginSchema>;
-
-export async function createAccount(data: SignupInput) {
+export async function POST(request: NextRequest) {
   try {
-    const validatedData = signupSchema.parse(data);
+    const body = await request.json();
+    const validatedData = signupSchema.parse(body);
 
     // Check if username already exists
     const existingUsername = await prisma.user.findUnique({
@@ -43,7 +35,7 @@ export async function createAccount(data: SignupInput) {
     });
 
     if (existingUsername) {
-      return { error: 'Username already taken' };
+      return NextResponse.json({ error: 'Username already taken' }, { status: 400 });
     }
 
     // Check if email already exists
@@ -52,7 +44,7 @@ export async function createAccount(data: SignupInput) {
     });
 
     if (existingEmail) {
-      return { error: 'Email already registered' };
+      return NextResponse.json({ error: 'Email already registered' }, { status: 400 });
     }
 
     // Hash password
@@ -68,46 +60,15 @@ export async function createAccount(data: SignupInput) {
       },
     });
 
-    return { success: true, userId: user.id };
+    return NextResponse.json({ success: true, userId: user.id }, { status: 201 });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return { error: 'Invalid input data', details: error.errors };
+      return NextResponse.json({ 
+        error: 'Invalid input data', 
+        details: error.errors 
+      }, { status: 400 });
     }
     console.error('Signup error:', error);
-    return { error: 'Failed to create account' };
-  }
-}
-
-export async function authenticateUser(data: LoginInput) {
-  try {
-    const validatedData = loginSchema.parse(data);
-    
-    // Find user by username or email
-    const user = await prisma.user.findFirst({
-      where: {
-        OR: [
-          { username: validatedData.identifier },
-          { email: validatedData.identifier },
-        ],
-      },
-    });
-
-    if (!user) {
-      return { error: 'Invalid credentials' };
-    }
-
-    const isPasswordValid = await bcrypt.compare(validatedData.password, user.passwordHash);
-
-    if (!isPasswordValid) {
-      return { error: 'Invalid credentials' };
-    }
-
-    return { success: true, user: { id: user.id, username: user.username, email: user.email } };
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return { error: 'Invalid input data', details: error.errors };
-    }
-    console.error('Login error:', error);
-    return { error: 'Authentication failed' };
+    return NextResponse.json({ error: 'Failed to create account' }, { status: 500 });
   }
 }
