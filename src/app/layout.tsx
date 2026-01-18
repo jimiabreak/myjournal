@@ -2,25 +2,22 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { TopBar } from "@/components/TopBar";
 import { Sidebar } from "@/components/Sidebar";
-import { SessionProvider } from "@/components/SessionProvider";
-import { getSession } from "@/lib/auth";
+import { ClerkProvider } from '@clerk/nextjs';
 
 export const metadata: Metadata = {
   title: "LiveJournal 2003",
   description: "A nostalgic LiveJournal experience",
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await getSession();
-
   return (
-    <html lang="en">
-      <body>
-        <SessionProvider session={session}>
+    <ClerkProvider>
+      <html lang="en">
+        <body>
           <TopBar />
           <div className="lj-container">
             <div className="flex">
@@ -30,8 +27,8 @@ export default async function RootLayout({
               </main>
             </div>
           </div>
-        </SessionProvider>
-      </body>
-    </html>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

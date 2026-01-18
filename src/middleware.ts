@@ -1,28 +1,21 @@
-import { withAuth } from 'next-auth/middleware';
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 
-export default withAuth(
-  function middleware(req) {
-    // Middleware logic if needed
-  },
-  {
-    callbacks: {
-      authorized: ({ token, req }) => {
-        const { pathname } = req.nextUrl;
+const isProtectedRoute = createRouteMatcher([
+  '/journal/new(.*)',
+  '/profile(.*)',
+  '/friends(.*)',
+  '/feed(.*)',
+]);
 
-        // Protect /journal and /profile routes
-        if (pathname.startsWith('/journal') || pathname.startsWith('/profile')) {
-          return !!token;
-        }
-
-        return true;
-      },
-    },
-    pages: {
-      signIn: '/login',
-    },
+export default clerkMiddleware(async (auth, req) => {
+  if (isProtectedRoute(req)) {
+    await auth.protect();
   }
-);
+});
 
 export const config = {
-  matcher: ['/journal/:path*', '/profile/:path*'],
+  matcher: [
+    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    '/(api|trpc)(.*)',
+  ],
 };

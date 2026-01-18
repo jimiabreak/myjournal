@@ -1,13 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import { useSession } from 'next-auth/react';
+import { useUser } from '@clerk/nextjs';
 import { Userpic } from './Userpic';
 
 export function UserSidebar() {
-  const { data: session } = useSession();
+  const { user, isSignedIn } = useUser();
 
-  if (!session?.user) {
+  if (!isSignedIn) {
     // Show welcome box for logged out users
     return (
       <div className="lj-box">
@@ -31,7 +31,10 @@ export function UserSidebar() {
     );
   }
 
-  const user = session.user;
+  const username = user?.username || user?.id;
+  const displayName = user?.firstName
+    ? `${user.firstName}${user.lastName ? ' ' + user.lastName : ''}`
+    : user?.username || 'User';
 
   return (
     <div className="lj-box">
@@ -41,8 +44,8 @@ export function UserSidebar() {
           {/* Userpic */}
           <div style={{ flexShrink: 0 }}>
             <Userpic
-              src={user.image}
-              alt={`${user.displayName}'s userpic`}
+              src={user?.imageUrl}
+              alt={`${displayName}'s userpic`}
               size="large"
             />
           </div>
@@ -51,13 +54,13 @@ export function UserSidebar() {
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ marginBottom: '4px' }}>
               <Link
-                href={`/journal/${user.username}`}
+                href={`/journal/${username}`}
                 className="font-bold text-small"
               >
-                {user.displayName}
+                {displayName}
               </Link>
               <p className="text-tiny" style={{ color: 'var(--lj-text-gray)' }}>
-                @{user.username}
+                @{username}
               </p>
             </div>
 
@@ -79,7 +82,7 @@ export function UserSidebar() {
             </Link>
           </div>
           <div>
-            <Link href={`/journal/${user.username}`} className="text-tiny">
+            <Link href={`/journal/${username}`} className="text-tiny">
               View My Journal
             </Link>
           </div>
