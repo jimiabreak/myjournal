@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { getProfile, updateProfile } from '@/lib/actions/profile';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import Link from 'next/link';
 
 type User = {
   id: string;
@@ -23,7 +24,7 @@ export default function ProfilePage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  
+
   const [formData, setFormData] = useState({
     displayName: '',
     bio: '',
@@ -43,7 +44,7 @@ export default function ProfilePage() {
       router.push('/login');
       return;
     }
-    
+
     setUser(result.user!);
     setFormData({
       displayName: result.user!.displayName,
@@ -86,17 +87,16 @@ export default function ProfilePage() {
       });
 
       const result = await response.json();
-      
+
       if (result.success) {
         setUser(prev => prev ? { ...prev, userpicUrl: result.userpicUrl } : null);
         setUserpicFile(null);
         setUserpicPreview(null);
-        // Update session to reflect userpic change in sidebar
         await updateSession();
       } else {
         setErrors({ userpic: result.error });
       }
-    } catch (error) {
+    } catch {
       setErrors({ userpic: 'Failed to upload userpic' });
     } finally {
       setUploadingUserpic(false);
@@ -112,15 +112,14 @@ export default function ProfilePage() {
       });
 
       const result = await response.json();
-      
+
       if (result.success) {
         setUser(prev => prev ? { ...prev, userpicUrl: null } : null);
-        // Update session to reflect userpic deletion in sidebar
         await updateSession();
       } else {
         setErrors({ userpic: result.error });
       }
-    } catch (error) {
+    } catch {
       setErrors({ userpic: 'Failed to delete userpic' });
     }
   };
@@ -135,8 +134,8 @@ export default function ProfilePage() {
     if (result.error) {
       if (result.details) {
         const fieldErrors: Record<string, string> = {};
-        result.details.forEach((error: any) => {
-          const field = error.path[0] as string;
+        result.details.forEach((error) => {
+          const field = String(error.path[0]);
           if (field) {
             fieldErrors[field] = error.message;
           }
@@ -148,7 +147,6 @@ export default function ProfilePage() {
     } else {
       setUser(prev => prev ? { ...prev, displayName: formData.displayName, bio: formData.bio } : null);
       setIsEditing(false);
-      // Update session to reflect changes in sidebar
       await updateSession();
     }
 
@@ -157,35 +155,61 @@ export default function ProfilePage() {
 
   if (isLoading) {
     return (
-      <div className="bg-lj-blue-4 border border-lj-blue-2 rounded p-4">
-        <p className="text-lj-ink">Loading profile...</p>
+      <div className="lj-box">
+        <div className="lj-box-content lj-loading">
+          Loading your profile...
+        </div>
       </div>
     );
   }
 
   if (!user) {
     return (
-      <div className="bg-lj-blue-4 border border-lj-blue-2 rounded p-4">
-        <p className="text-lj-ink">Profile not found.</p>
+      <div className="lj-box">
+        <div className="lj-box-content lj-empty-state">
+          Profile not found
+        </div>
       </div>
     );
   }
 
+  const memberSince = new Date(user.createdAt).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+
   return (
-    <div className="space-y-6">
-      {/* Profile Header */}
-      <div className="bg-lj-blue-3 border border-lj-blue-2 rounded">
-        <div className="bg-lj-steel px-4 py-3 border-b border-lj-blue-2">
-          <h1 className="text-white font-bold text-xl">Edit Personal Info</h1>
+    <div>
+      {/* Page Header */}
+      <div className="lj-box">
+        <div className="lj-box-header">
+          Edit Personal Info
         </div>
-        
-        <div className="p-4">
-          <div className="flex items-start space-x-6">
+        <div className="lj-box-content">
+          <p className="text-small">
+            Customize your journal profile.
+          </p>
+        </div>
+      </div>
+
+      {/* Profile Card */}
+      <div className="lj-profile-header">
+        <div className="lj-profile-title">
+          <h1 style={{ margin: 0, marginBottom: '4px' }}>
+            {user.displayName}
+          </h1>
+          <div className="text-small" style={{ color: 'white', opacity: 0.9 }}>@{user.username}</div>
+        </div>
+
+        <div className="lj-profile-content">
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '15px' }}>
             {/* Userpic Section */}
-            <div className="flex-shrink-0">
-              <div className="space-y-3">
+            <div style={{ flexShrink: 0 }}>
+              <div>
                 {user.userpicUrl || userpicPreview ? (
                   <div className="lj-userpic">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={userpicPreview || user.userpicUrl!}
                       alt={`${user.displayName}'s userpic`}
@@ -193,11 +217,11 @@ export default function ProfilePage() {
                   </div>
                 ) : (
                   <div className="lj-userpic lj-userpic-placeholder">
-                    <span className="text-lj-gray text-xs">No userpic</span>
+                    <span className="text-tiny">no pic</span>
                   </div>
                 )}
 
-                <div className="space-y-2">
+                <div style={{ marginTop: '8px' }}>
                   <div>
                     <input
                       type="file"
@@ -205,10 +229,12 @@ export default function ProfilePage() {
                       accept="image/*"
                       onChange={handleUserpicChange}
                       className="hidden"
+                      style={{ display: 'none' }}
                     />
                     <label
                       htmlFor="userpic"
-                      className="cursor-pointer bg-lj-blue text-white px-3 py-1 rounded text-sm hover:bg-lj-blue-2"
+                      className="lj-button"
+                      style={{ fontSize: '10px', cursor: 'pointer', display: 'block', textAlign: 'center' }}
                     >
                       Choose Userpic
                     </label>
@@ -218,61 +244,83 @@ export default function ProfilePage() {
                     <button
                       onClick={uploadUserpic}
                       disabled={uploadingUserpic}
-                      className="bg-lj-purple text-white px-3 py-1 rounded text-sm hover:bg-purple-700 disabled:opacity-50"
+                      className="lj-button lj-button-primary"
+                      style={{ fontSize: '10px', width: '100%', marginTop: '4px' }}
                     >
                       {uploadingUserpic ? 'Uploading...' : 'Upload'}
                     </button>
                   )}
 
-                  {user.userpicUrl && (
+                  {user.userpicUrl && !userpicFile && (
                     <button
                       onClick={deleteUserpic}
-                      className="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700"
+                      className="lj-button"
+                      style={{ fontSize: '10px', width: '100%', marginTop: '4px' }}
                     >
-                      Delete
+                      Delete Userpic
                     </button>
                   )}
 
                   {errors.userpic && (
-                    <p className="text-red-600 text-xs">{errors.userpic}</p>
+                    <p className="text-tiny" style={{ color: 'var(--lj-orange)', marginTop: '4px' }}>
+                      {errors.userpic}
+                    </p>
                   )}
                 </div>
               </div>
             </div>
 
             {/* Profile Info */}
-            <div className="flex-1">
+            <div style={{ flex: 1, minWidth: 0 }}>
               {!isEditing ? (
-                <div className="space-y-4">
-                  <div>
-                    <h2 className="text-lj-purple font-bold text-lg">{user.displayName}</h2>
-                    <p className="text-lj-gray text-sm">@{user.username}</p>
+                <div>
+                  {/* Online status */}
+                  <div className="lj-online-status" style={{ marginBottom: '8px' }}>
+                    online now
                   </div>
-                  
-                  {user.bio && (
-                    <div>
-                      <h3 className="text-lj-ink font-semibold text-sm mb-1">Bio</h3>
-                      <p className="text-lj-ink text-sm whitespace-pre-wrap">{user.bio}</p>
+
+                  {/* Bio */}
+                  {user.bio ? (
+                    <div className="lj-away-message" style={{ marginBottom: '10px' }}>
+                      {user.bio}
+                    </div>
+                  ) : (
+                    <div className="lj-box-inner" style={{ marginBottom: '10px', fontStyle: 'italic' }}>
+                      <span className="text-muted">
+                        No bio yet. Click edit to add one.
+                      </span>
                     </div>
                   )}
 
-                  <div className="text-lj-gray text-xs">
-                    <p>Member since: {new Date(user.createdAt).toLocaleDateString()}</p>
-                    <p>Email: {user.email}</p>
+                  {/* Stats & Info */}
+                  <div className="lj-bio-section" style={{ marginBottom: '10px' }}>
+                    <h3>About Me</h3>
+                    <table style={{ fontSize: '10px' }}>
+                      <tbody>
+                        <tr>
+                          <td style={{ padding: '2px 8px 2px 0' }}><strong>Email:</strong></td>
+                          <td>{user.email}</td>
+                        </tr>
+                        <tr>
+                          <td style={{ padding: '2px 8px 2px 0' }}><strong>Member Since:</strong></td>
+                          <td>{memberSince}</td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
 
                   <button
                     onClick={() => setIsEditing(true)}
-                    className="bg-lj-blue text-white px-4 py-2 rounded text-sm hover:bg-lj-blue-2"
+                    className="lj-button lj-button-primary"
                   >
                     Edit Profile
                   </button>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div>
-                    <label htmlFor="displayName" className="block text-lj-ink font-semibold text-sm mb-1">
-                      Display Name
+                <form onSubmit={handleSubmit}>
+                  <div style={{ marginBottom: '10px' }}>
+                    <label htmlFor="displayName" className="text-small" style={{ display: 'block', marginBottom: '4px' }}>
+                      <strong>Display Name:</strong>
                     </label>
                     <input
                       type="text"
@@ -280,47 +328,56 @@ export default function ProfilePage() {
                       name="displayName"
                       value={formData.displayName}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-lj-blue-2 rounded focus:outline-none focus:border-lj-blue"
+                      style={{ width: '100%' }}
                       maxLength={50}
+                      placeholder="What should we call you?"
                     />
                     {errors.displayName && (
-                      <p className="text-red-600 text-xs mt-1">{errors.displayName}</p>
+                      <p className="text-tiny" style={{ color: 'var(--lj-orange)', marginTop: '4px' }}>
+                        {errors.displayName}
+                      </p>
                     )}
                   </div>
 
-                  <div>
-                    <label htmlFor="bio" className="block text-lj-ink font-semibold text-sm mb-1">
-                      Bio
+                  <div style={{ marginBottom: '10px' }}>
+                    <label htmlFor="bio" className="text-small" style={{ display: 'block', marginBottom: '4px' }}>
+                      <strong>Bio:</strong>
                     </label>
                     <textarea
                       id="bio"
                       name="bio"
                       value={formData.bio}
                       onChange={handleInputChange}
-                      rows={4}
-                      className="w-full px-3 py-2 border border-lj-blue-2 rounded focus:outline-none focus:border-lj-blue"
+                      rows={5}
+                      style={{ width: '100%' }}
                       maxLength={500}
                       placeholder="Tell us about yourself..."
                     />
-                    <div className="flex justify-between mt-1">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '4px' }}>
                       {errors.bio && (
-                        <p className="text-red-600 text-xs">{errors.bio}</p>
+                        <p className="text-tiny" style={{ color: 'var(--lj-orange)' }}>
+                          {errors.bio}
+                        </p>
                       )}
-                      <p className="text-lj-gray text-xs ml-auto">
+                      <p className="text-tiny text-muted" style={{ marginLeft: 'auto' }}>
                         {formData.bio.length}/500
                       </p>
                     </div>
                   </div>
 
                   {errors.general && (
-                    <p className="text-red-600 text-sm">{errors.general}</p>
+                    <div className="lj-box-inner" style={{ marginBottom: '10px', borderColor: 'var(--lj-orange)' }}>
+                      <p className="text-small" style={{ color: 'var(--lj-orange)' }}>
+                        {errors.general}
+                      </p>
+                    </div>
                   )}
 
-                  <div className="flex space-x-3">
+                  <div style={{ display: 'flex', gap: '8px' }}>
                     <button
                       type="submit"
                       disabled={isSaving}
-                      className="bg-lj-blue text-white px-4 py-2 rounded text-sm hover:bg-lj-blue-2 disabled:opacity-50"
+                      className="lj-button lj-button-primary"
                     >
                       {isSaving ? 'Saving...' : 'Save Changes'}
                     </button>
@@ -334,7 +391,7 @@ export default function ProfilePage() {
                         });
                         setErrors({});
                       }}
-                      className="bg-lj-gray text-white px-4 py-2 rounded text-sm hover:bg-gray-600"
+                      className="lj-button"
                     >
                       Cancel
                     </button>
@@ -343,6 +400,34 @@ export default function ProfilePage() {
               )}
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Quick Links */}
+      <div className="lj-box">
+        <div className="lj-box-header">Quick Links</div>
+        <div className="lj-box-content">
+          <div style={{ lineHeight: '1.6' }}>
+            <div>
+              <Link href={`/journal/${user.username}`} className="text-small">
+                View My Journal
+              </Link>
+            </div>
+            <div>
+              <Link href="/journal/new" className="text-small">
+                Post New Entry
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="lj-footer">
+        <div>
+          LiveJournal 2003 |
+          <Link href="/about" style={{ margin: '0 8px' }}>About</Link> |
+          <Link href="/faq" style={{ margin: '0 8px' }}>FAQ</Link>
         </div>
       </div>
     </div>

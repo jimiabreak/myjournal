@@ -33,7 +33,7 @@ export const journalEntrySchema = z.object({
     .min(1, 'Content is required')
     .max(50000, 'Content must be less than 50,000 characters'),
   visibility: z.enum(['PUBLIC', 'PRIVATE', 'FRIENDS'], {
-    errorMap: () => ({ message: 'Visibility must be PUBLIC, PRIVATE, or FRIENDS' })
+    message: 'Visibility must be PUBLIC, PRIVATE, or FRIENDS'
   }),
   allowComments: z.boolean()
 });

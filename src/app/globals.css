@@ -1,36 +1,55 @@
 @import "tailwindcss";
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   LIVEJOURNAL 2003 - Authentic Recreation
+   A time capsule to when the internet was simpler
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 :root {
-  /* LiveJournal 2003 Theme Colors */
-  --lj-blue: #326498;
-  --lj-purple: #67116A;
-  --lj-steel: #546A99;
-  --lj-blue-2: #6A8EB2;
-  --lj-blue-3: #A3ADC8;
-  --lj-blue-4: #B4C2D1;
-  --lj-gray: #666666;
-  --lj-orange: #CD6719;
-  --lj-paper: #FAFAFA;
-  --lj-ink: #111111;
+  /* Authentic 2003 LiveJournal Color Palette */
+  --lj-header-dark: #314D6B;
+  --lj-header-light: #4A6B8A;
+  --lj-nav-blue: #6699CC;
+  --lj-nav-blue-dark: #5588BB;
+  --lj-box-bg: #C5D9E8;
+  --lj-box-header: #6699CC;
+  --lj-box-border: #99BBDD;
+  --lj-content-bg: #FFFFFF;
+  --lj-page-bg: #FFFFFF;
+
+  /* Text Colors */
+  --lj-text: #000000;
+  --lj-text-gray: #666666;
+  --lj-link: #0000CC;
+  --lj-link-visited: #660099;
+  --lj-link-hover: #0000FF;
+
+  /* Accent Colors */
+  --lj-orange: #FF6600;
+  --lj-green: #009900;
+  --lj-yellow: #FFCC00;
+  --lj-button-yellow: #FFDD44;
+
+  /* Entry styling */
+  --lj-entry-header: #6699CC;
+  --lj-entry-bg: #FFFFFF;
+  --lj-entry-border: #99BBDD;
+  --lj-meta-bg: #E8F0F8;
 }
 
 @theme inline {
-  --color-lj-blue: var(--lj-blue);
-  --color-lj-purple: var(--lj-purple);
-  --color-lj-steel: var(--lj-steel);
-  --color-lj-blue-2: var(--lj-blue-2);
-  --color-lj-blue-3: var(--lj-blue-3);
-  --color-lj-blue-4: var(--lj-blue-4);
-  --color-lj-gray: var(--lj-gray);
-  --color-lj-orange: var(--lj-orange);
-  --color-lj-paper: var(--lj-paper);
-  --color-lj-ink: var(--lj-ink);
+  --color-lj-blue: var(--lj-nav-blue);
+  --color-lj-header: var(--lj-header-dark);
   --font-lj: Verdana, Arial, Helvetica, sans-serif;
 }
 
-/* Global Layout & Typography */
+/* ═══════════════════════════════════════════════════════════════════════════
+   GLOBAL RESET & BASE STYLES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 * {
   box-sizing: border-box;
+  border-radius: 0 !important;
 }
 
 html {
@@ -38,9 +57,9 @@ html {
 }
 
 body {
-  background: var(--lj-paper);
-  color: var(--lj-ink);
-  font-family: var(--font-lj);
+  background: var(--lj-page-bg);
+  color: var(--lj-text);
+  font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: 11px;
   line-height: 1.4;
   margin: 0;
@@ -48,38 +67,45 @@ body {
   min-height: 100%;
 }
 
-/* Typography */
+/* ═══════════════════════════════════════════════════════════════════════════
+   TYPOGRAPHY - Authentic 2003 Web Style
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 h1, h2, h3, h4, h5, h6 {
-  color: var(--lj-purple);
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  color: var(--lj-text);
   font-weight: bold;
   margin: 0.5em 0;
 }
 
-h1 { font-size: 14px; }
-h2 { font-size: 13px; }
+h1 { font-size: 16px; }
+h2 { font-size: 14px; }
 h3 { font-size: 12px; }
 h4, h5, h6 { font-size: 11px; }
 
-/* Links */
+/* Links - Classic 2003 Web Style */
 a {
-  color: var(--lj-blue);
+  color: var(--lj-link);
   text-decoration: underline;
 }
 
 a:visited {
-  color: var(--lj-purple);
+  color: var(--lj-link-visited);
 }
 
 a:hover {
-  color: #1d3a59; /* Slightly darker blue */
+  color: var(--lj-link-hover);
   text-decoration: underline;
 }
 
-/* Layout Utilities */
+/* ═══════════════════════════════════════════════════════════════════════════
+   LAYOUT CONTAINERS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 .lj-container {
   max-width: 900px;
   margin: 0 auto;
-  padding: 0 15px;
+  padding: 0 10px;
 }
 
 .lj-content {
@@ -87,94 +113,149 @@ a:hover {
   margin: 0 auto;
 }
 
-/* LiveJournal Box Styling */
+/* ═══════════════════════════════════════════════════════════════════════════
+   TOP BAR - The iconic LJ header
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.lj-topbar {
+  background: linear-gradient(180deg, var(--lj-header-light) 0%, var(--lj-header-dark) 100%);
+  color: white;
+  padding: 8px 0;
+  border-bottom: 1px solid #2A3D55;
+}
+
+.lj-topbar a {
+  color: white;
+  text-decoration: none;
+}
+
+.lj-topbar a:hover {
+  text-decoration: underline;
+  color: white;
+}
+
+.lj-topbar a:visited {
+  color: white;
+}
+
+/* Navigation Bar - Below header */
+.lj-navbar {
+  background: var(--lj-nav-blue);
+  padding: 4px 0;
+  border-bottom: 1px solid var(--lj-nav-blue-dark);
+}
+
+.lj-navbar a {
+  color: white;
+  text-decoration: none;
+  padding: 2px 12px;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.lj-navbar a:hover {
+  text-decoration: underline;
+}
+
+.lj-navbar a:visited {
+  color: white;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BOX COMPONENTS - The classic LJ pale blue boxes
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 .lj-box {
-  background: var(--lj-blue-3);
-  border: 1px solid var(--lj-blue-2);
+  background: var(--lj-box-bg);
+  border: 1px solid var(--lj-box-border);
   margin-bottom: 10px;
 }
 
 .lj-box-header {
-  background: var(--lj-steel);
+  background: var(--lj-box-header);
   color: white;
-  padding: 4px 8px;
-  border-bottom: 1px solid var(--lj-blue-2);
+  padding: 3px 8px;
   font-weight: bold;
   font-size: 11px;
 }
 
 .lj-box-content {
-  background: var(--lj-blue-3);
+  background: var(--lj-box-bg);
   padding: 8px;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
 }
 
 .lj-box-inner {
-  background: var(--lj-blue-4);
-  border: 1px solid var(--lj-blue-2);
+  background: var(--lj-content-bg);
+  border: 1px solid var(--lj-box-border);
   padding: 8px;
 }
 
-/* Buttons - Small, Square, No Rounded Corners */
-button, 
-input[type="submit"], 
+/* ═══════════════════════════════════════════════════════════════════════════
+   BUTTONS - Classic 2003 style
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+button,
+input[type="submit"],
 input[type="button"],
 .lj-button {
-  background: var(--lj-blue-3);
-  border: 1px solid var(--lj-blue-2);
-  color: var(--lj-ink);
+  background: #E8E8E8;
+  border: 1px solid #999999;
+  color: var(--lj-text);
   cursor: pointer;
-  font-family: var(--font-lj);
-  font-size: 10px;
-  font-weight: bold;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 11px;
   padding: 2px 8px;
   text-decoration: none;
   display: inline-block;
-  border-radius: 0; /* No rounded corners */
-  line-height: 1.2;
 }
 
 button:hover,
 input[type="submit"]:hover,
 input[type="button"]:hover,
 .lj-button:hover {
-  background: var(--lj-blue-2);
-  border-color: var(--lj-blue);
+  background: #D8D8D8;
+  border-color: #666666;
 }
 
 button:active,
 input[type="submit"]:active,
 input[type="button"]:active,
 .lj-button:active {
-  background: var(--lj-blue);
-  color: white;
+  background: #C8C8C8;
 }
 
-/* Primary Button Variant */
 .lj-button-primary {
-  background: var(--lj-blue);
+  background: var(--lj-nav-blue);
   color: white;
-  border-color: var(--lj-steel);
+  border-color: var(--lj-nav-blue-dark);
 }
 
 .lj-button-primary:hover {
-  background: var(--lj-steel);
+  background: var(--lj-nav-blue-dark);
 }
 
-/* Form Elements */
+.lj-button-yellow {
+  background: var(--lj-button-yellow);
+  border-color: #CC9900;
+  color: #333333;
+  font-weight: bold;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FORM ELEMENTS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 input[type="text"],
 input[type="password"],
 input[type="email"],
 textarea,
 select {
   background: white;
-  border: 1px solid var(--lj-blue-2);
-  color: var(--lj-ink);
-  font-family: var(--font-lj);
+  border: 1px solid #999999;
+  color: var(--lj-text);
+  font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: 11px;
   padding: 2px 4px;
-  border-radius: 0;
 }
 
 input[type="text"]:focus,
@@ -182,16 +263,19 @@ input[type="password"]:focus,
 input[type="email"]:focus,
 textarea:focus,
 select:focus {
-  border-color: var(--lj-blue);
+  border-color: var(--lj-nav-blue);
   outline: none;
 }
 
-/* LiveJournal userpic styling */
+/* ═══════════════════════════════════════════════════════════════════════════
+   USERPIC STYLING - Classic LJ square pics
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 .lj-userpic {
   width: 100px;
   height: 100px;
-  border: 1px solid var(--lj-blue-2);
-  background: var(--lj-blue-4);
+  border: 1px solid var(--lj-box-border);
+  background: var(--lj-box-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -206,10 +290,10 @@ select:focus {
 }
 
 .lj-userpic-small {
-  width: 16px;
-  height: 16px;
-  border: 1px solid var(--lj-blue-2);
-  background: var(--lj-blue-4);
+  width: 17px;
+  height: 17px;
+  border: 1px solid var(--lj-box-border);
+  background: var(--lj-box-bg);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -217,8 +301,8 @@ select:focus {
 }
 
 .lj-userpic-small img {
-  width: 16px;
-  height: 16px;
+  width: 17px;
+  height: 17px;
   object-fit: cover;
   display: block;
 }
@@ -226,8 +310,8 @@ select:focus {
 .lj-userpic-medium {
   width: 32px;
   height: 32px;
-  border: 1px solid var(--lj-blue-2);
-  background: var(--lj-blue-4);
+  border: 1px solid var(--lj-box-border);
+  background: var(--lj-box-bg);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -242,71 +326,98 @@ select:focus {
 }
 
 .lj-userpic-placeholder {
-  background: var(--lj-blue-3);
+  background: var(--lj-box-bg);
+  color: var(--lj-text-gray);
+  font-size: 9px;
   text-align: center;
-  color: var(--lj-gray);
-  font-size: 9px;
 }
 
-/* Orange accent styling */
-.lj-accent {
-  color: var(--lj-orange);
-  font-weight: bold;
-  font-size: 9px;
-}
+/* ═══════════════════════════════════════════════════════════════════════════
+   JOURNAL ENTRY STYLING
+   ═══════════════════════════════════════════════════════════════════════════ */
 
-/* Entry styling */
 .lj-entry {
-  background: var(--lj-blue-3);
-  border: 1px solid var(--lj-blue-2);
+  background: var(--lj-entry-bg);
+  border: 1px solid var(--lj-entry-border);
   margin-bottom: 15px;
 }
 
 .lj-entry-header {
-  background: var(--lj-steel);
+  background: var(--lj-entry-header);
   color: white;
-  padding: 6px 10px;
-  border-bottom: 1px solid var(--lj-blue-2);
+  padding: 4px 8px;
+  font-size: 11px;
 }
 
 .lj-entry-content {
-  background: var(--lj-blue-4);
+  background: var(--lj-entry-bg);
   padding: 10px;
 }
 
 .lj-entry-subject {
-  color: var(--lj-purple);
+  color: var(--lj-link);
   font-weight: bold;
-  font-size: 13px;
+  font-size: 12px;
   margin-bottom: 8px;
 }
 
-.lj-entry-meta {
-  background: var(--lj-blue-3);
-  padding: 6px 10px;
-  border-top: 1px solid var(--lj-blue-2);
-  font-size: 10px;
-  color: var(--lj-gray);
+.lj-entry-subject a {
+  color: var(--lj-link);
 }
 
-/* Comments styling */
+.lj-entry-meta {
+  background: var(--lj-meta-bg);
+  padding: 4px 8px;
+  border-top: 1px solid var(--lj-entry-border);
+  font-size: 10px;
+  color: var(--lj-text-gray);
+}
+
+/* Mood/Music/Location metadata */
+.lj-metadata-box {
+  background: var(--lj-meta-bg);
+  border: 1px solid var(--lj-entry-border);
+  padding: 6px 8px;
+  margin: 8px 0;
+  font-size: 10px;
+}
+
+.lj-metadata-label {
+  color: var(--lj-text-gray);
+  font-weight: bold;
+}
+
+.lj-metadata-value {
+  color: var(--lj-text);
+}
+
+/* Mood indicator */
+.lj-mood-indicator {
+  display: inline;
+  font-style: italic;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   COMMENTS STYLING
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 .lj-comments {
-  background: var(--lj-blue-3);
-  border: 1px solid var(--lj-blue-2);
+  background: var(--lj-box-bg);
+  border: 1px solid var(--lj-box-border);
   margin-top: 10px;
+  padding: 8px;
 }
 
 .lj-comment {
-  background: var(--lj-blue-4);
-  border: 1px solid var(--lj-blue-2);
+  background: var(--lj-content-bg);
+  border: 1px solid var(--lj-box-border);
   margin: 8px 0;
 }
 
 .lj-comment-header {
-  background: var(--lj-steel);
+  background: var(--lj-box-header);
   color: white;
-  padding: 4px 8px;
-  border-bottom: 1px solid var(--lj-blue-2);
+  padding: 3px 8px;
   font-size: 10px;
 }
 
@@ -316,80 +427,126 @@ select:focus {
 }
 
 .lj-comment-reply {
-  margin-left: 30px;
+  margin-left: 25px;
 }
 
-/* Navigation styling */
+/* ═══════════════════════════════════════════════════════════════════════════
+   NAVIGATION
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 .lj-nav {
-  background: var(--lj-blue-3);
-  border: 1px solid var(--lj-blue-2);
+  background: var(--lj-box-bg);
+  border: 1px solid var(--lj-box-border);
   padding: 4px 8px;
   margin-bottom: 10px;
   font-size: 10px;
+  display: flex;
+  justify-content: space-between;
 }
 
 .lj-nav a {
-  margin-right: 10px;
+  color: var(--lj-link);
 }
 
-/* Calendar stub styling */
+/* ═══════════════════════════════════════════════════════════════════════════
+   SIDEBAR
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.lj-sidebar {
+  width: 180px;
+  padding-right: 15px;
+  flex-shrink: 0;
+}
+
+.lj-main-content {
+  flex: 1;
+  padding-left: 15px;
+  padding-top: 10px;
+  min-width: 0;
+  border-left: 1px solid var(--lj-box-border);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CALENDAR
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 .lj-calendar {
-  background: var(--lj-blue-3);
-  border: 1px solid var(--lj-blue-2);
+  background: var(--lj-box-bg);
+  border: 1px solid var(--lj-box-border);
   text-align: center;
-  padding: 5px;
   margin-bottom: 10px;
 }
 
 .lj-calendar-header {
-  background: var(--lj-steel);
+  background: var(--lj-box-header);
   color: white;
   padding: 3px;
   font-weight: bold;
   font-size: 10px;
-  margin-bottom: 3px;
 }
 
 .lj-calendar-nav {
-  font-size: 9px;
-  margin: 2px 0;
+  font-size: 10px;
+  padding: 4px;
+  background: var(--lj-box-bg);
 }
 
 .lj-calendar-nav a {
   margin: 0 5px;
-  text-decoration: none;
 }
 
-/* Day navigation */
+/* ═══════════════════════════════════════════════════════════════════════════
+   DAY NAVIGATION
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 .lj-day-nav {
-  background: var(--lj-blue-3);
-  border: 1px solid var(--lj-blue-2);
+  background: var(--lj-box-bg);
+  border: 1px solid var(--lj-box-border);
   padding: 3px 8px;
   font-size: 10px;
   text-align: center;
   margin-bottom: 10px;
 }
 
-/* Footer styling */
+/* ═══════════════════════════════════════════════════════════════════════════
+   FOOTER - Classic LJ footer bar
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 .lj-footer {
+  background: var(--lj-nav-blue);
+  color: white;
   margin-top: 20px;
-  padding: 10px;
+  padding: 8px;
   text-align: center;
-  font-size: 9px;
-  color: var(--lj-gray);
-  border-top: 1px solid var(--lj-blue-2);
+  font-size: 10px;
 }
 
-/* Utility classes */
+.lj-footer a {
+  color: white;
+  margin: 0 10px;
+}
+
+.lj-footer a:visited {
+  color: white;
+}
+
+.lj-accent {
+  color: var(--lj-orange);
+  font-weight: bold;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   UTILITY CLASSES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 .text-tiny { font-size: 9px; }
 .text-small { font-size: 10px; }
 .text-normal { font-size: 11px; }
+.text-muted { color: var(--lj-text-gray); }
 
-/* Text wrapping and overflow utilities */
 .break-words {
   word-wrap: break-word;
   overflow-wrap: break-word;
-  hyphens: auto;
 }
 
 .text-wrap {
@@ -398,26 +555,19 @@ select:focus {
 }
 
 .lj-separator {
-  border-top: 1px solid var(--lj-blue-2);
-  margin: 10px 0;
+  border-top: 1px solid var(--lj-box-border);
+  margin: 8px 0;
 }
 
-/* Remove Tailwind button styling that conflicts */
-button {
-  background-color: var(--lj-blue-3) !important;
-  border-radius: 0 !important;
+/* ═══════════════════════════════════════════════════════════════════════════
+   PROSE STYLING FOR ENTRY CONTENT
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.lj-prose {
+  color: var(--lj-text);
+  line-height: 1.5;
 }
 
-/* Override any modern styling */
-* {
-  border-radius: 0 !important;
-}
-
-input, textarea, select {
-  border-radius: 0 !important;
-}
-
-/* Prose styling for entry content */
 .lj-prose p {
   margin: 8px 0;
 }
@@ -428,45 +578,244 @@ input, textarea, select {
 }
 
 .lj-prose blockquote {
-  margin: 8px 20px;
+  margin: 8px 15px;
   padding-left: 10px;
-  border-left: 2px solid var(--lj-blue-2);
+  border-left: 2px solid var(--lj-box-border);
+  color: var(--lj-text-gray);
+}
+
+.lj-prose a {
+  color: var(--lj-link);
+}
+
+.lj-prose strong {
+  font-weight: bold;
+}
+
+.lj-prose em {
   font-style: italic;
 }
 
-/* Top bar styling */
-.lj-topbar {
-  background: var(--lj-steel);
+/* ═══════════════════════════════════════════════════════════════════════════
+   PROFILE PAGE STYLES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.lj-profile-header {
+  background: var(--lj-content-bg);
+  border: 1px solid var(--lj-box-border);
+  margin-bottom: 10px;
+}
+
+.lj-profile-title {
+  background: var(--lj-box-header);
   color: white;
-  padding: 8px 0;
-  margin-bottom: 15px;
-  border-bottom: 1px solid var(--lj-blue-2);
+  padding: 4px 8px;
+  font-weight: bold;
+}
+
+.lj-profile-content {
+  padding: 10px;
+  background: var(--lj-content-bg);
+}
+
+.lj-bio-section {
+  background: var(--lj-meta-bg);
+  border: 1px solid var(--lj-box-border);
+  padding: 8px;
+  margin-top: 10px;
+}
+
+.lj-bio-section h3 {
+  font-size: 11px;
+  color: var(--lj-text);
+  margin-bottom: 6px;
+}
+
+/* Stats display */
+.lj-stats {
+  display: flex;
+  gap: 15px;
+  font-size: 10px;
+  color: var(--lj-text-gray);
+  margin-top: 8px;
+}
+
+.lj-stat-item {
+  text-align: right;
+}
+
+.lj-stat-value {
+  color: var(--lj-text);
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.lj-stat-label {
+  font-size: 10px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SECURITY BADGES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.lj-security-badge {
+  display: inline;
+  font-size: 10px;
+  font-weight: normal;
+}
+
+.lj-security-public {
+  color: var(--lj-green);
+}
+
+.lj-security-friends {
+  color: var(--lj-nav-blue);
+}
+
+.lj-security-private {
+  color: var(--lj-orange);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LOADING & EMPTY STATES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.lj-loading {
+  text-align: center;
+  padding: 20px;
+  color: var(--lj-text-gray);
+}
+
+.lj-empty-state {
+  text-align: center;
+  padding: 30px 15px;
+  color: var(--lj-text-gray);
+  font-style: italic;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   USER STATS BOX (like the sidebar in the screenshot)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.lj-user-stats {
+  background: var(--lj-box-bg);
+  border: 1px solid var(--lj-box-border);
+  margin-bottom: 10px;
+}
+
+.lj-user-stats-header {
+  background: var(--lj-box-header);
+  color: white;
+  padding: 3px 8px;
+  font-weight: bold;
   font-size: 11px;
 }
 
-.lj-topbar a {
-  color: #E8F0FF;
-  margin-right: 15px;
-  text-decoration: none;
+.lj-user-stats-content {
+  padding: 8px;
+  font-size: 10px;
 }
 
-.lj-topbar a:visited {
-  color: #E8F0FF;
+.lj-user-stats-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 2px 0;
 }
 
-.lj-topbar a:hover {
-  color: white;
-  text-decoration: underline;
+.lj-user-stats-label {
+  color: var(--lj-text);
+  font-weight: bold;
 }
 
-/* Sidebar styling */
-.lj-sidebar {
-  width: 200px;
-  padding-right: 20px;
+.lj-user-stats-value {
+  color: var(--lj-text);
 }
 
-.lj-main-content {
-  flex: 1;
-  padding-left: 20px;
-  padding-top: 15px;
+/* ═══════════════════════════════════════════════════════════════════════════
+   ONLINE STATUS (simple text, no fancy effects)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.lj-online-status {
+  color: var(--lj-green);
+  font-size: 10px;
+  font-weight: bold;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   AWAY MESSAGE / QUOTE STYLE
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.lj-away-message {
+  background: var(--lj-meta-bg);
+  border: 1px solid var(--lj-box-border);
+  padding: 8px;
+  font-style: italic;
+  color: var(--lj-text-gray);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DIVIDERS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.lj-divider {
+  border-top: 1px solid var(--lj-box-border);
+  margin: 10px 0;
+}
+
+.lj-wave-divider {
+  border-top: 1px solid var(--lj-box-border);
+  margin: 10px 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BLINKIES (simplified - just small badges)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.lj-blinkie {
+  display: inline-block;
+  background: var(--lj-box-bg);
+  border: 1px solid var(--lj-box-border);
+  padding: 1px 6px;
+  font-size: 9px;
+  color: var(--lj-text);
+  margin: 1px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   STAR BURST (removed - not authentic)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.lj-star-burst {
+  display: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .lj-sidebar {
+    display: none;
+  }
+
+  .lj-main-content {
+    padding-left: 0;
+    border-left: none;
+  }
+
+  .lj-container {
+    padding: 0 5px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   OVERRIDE TAILWIND DEFAULTS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+button {
+  background-color: #E8E8E8 !important;
+}
+
+.lj-button-primary {
+  background-color: var(--lj-nav-blue) !important;
 }
