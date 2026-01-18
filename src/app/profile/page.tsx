@@ -1,9 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { getProfile, updateProfile } from '@/lib/actions/profile';
 import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 
 type User = {
@@ -18,7 +17,6 @@ type User = {
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { update: updateSession } = useSession();
   const [user, setUser] = useState<User | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -34,11 +32,7 @@ export default function ProfilePage() {
   const [userpicPreview, setUserpicPreview] = useState<string | null>(null);
   const [uploadingUserpic, setUploadingUserpic] = useState(false);
 
-  useEffect(() => {
-    loadProfile();
-  }, []);
-
-  const loadProfile = async () => {
+  const loadProfile = useCallback(async () => {
     const result = await getProfile();
     if (result.error) {
       router.push('/login');
@@ -51,7 +45,11 @@ export default function ProfilePage() {
       bio: result.user!.bio || '',
     });
     setIsLoading(false);
-  };
+  }, [router]);
+
+  useEffect(() => {
+    loadProfile();
+  }, [loadProfile]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -92,7 +90,6 @@ export default function ProfilePage() {
         setUser(prev => prev ? { ...prev, userpicUrl: result.userpicUrl } : null);
         setUserpicFile(null);
         setUserpicPreview(null);
-        await updateSession();
       } else {
         setErrors({ userpic: result.error });
       }
@@ -115,7 +112,6 @@ export default function ProfilePage() {
 
       if (result.success) {
         setUser(prev => prev ? { ...prev, userpicUrl: null } : null);
-        await updateSession();
       } else {
         setErrors({ userpic: result.error });
       }
@@ -147,7 +143,6 @@ export default function ProfilePage() {
     } else {
       setUser(prev => prev ? { ...prev, displayName: formData.displayName, bio: formData.bio } : null);
       setIsEditing(false);
-      await updateSession();
     }
 
     setIsSaving(false);

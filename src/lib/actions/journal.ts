@@ -3,7 +3,6 @@
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser } from '@/lib/auth';
-import { redirect } from 'next/navigation';
 import { Security } from '@/generated/prisma';
 import { revalidatePath } from 'next/cache';
 import { journalEntrySchema, sanitizeHtml } from '@/lib/validation';
@@ -27,9 +26,10 @@ const entrySchema = z.object({
   location: data.location
 }));
 
+export type EntryInputRaw = z.input<typeof entrySchema>;
 export type EntryInput = z.infer<typeof entrySchema>;
 
-export async function createEntry(data: EntryInput) {
+export async function createEntry(data: EntryInputRaw) {
   try {
     const user = await getCurrentUser();
     if (!user) {
@@ -66,7 +66,7 @@ export async function createEntry(data: EntryInput) {
   }
 }
 
-export async function updateEntry(entryId: string, data: EntryInput) {
+export async function updateEntry(entryId: string, data: EntryInputRaw) {
   try {
     const user = await getCurrentUser();
     if (!user) {
@@ -94,7 +94,7 @@ export async function updateEntry(entryId: string, data: EntryInput) {
     // Sanitize HTML content
     const sanitizedContent = sanitizeHtml(enhancedValidated.content);
 
-    const entry = await prisma.entry.update({
+    await prisma.entry.update({
       where: { id: entryId },
       data: {
         subject: enhancedValidated.title === 'Untitled Entry' ? null : enhancedValidated.title,
@@ -163,7 +163,7 @@ export async function getUserEntries(username: string, currentUserId?: string, l
     }
 
     // Determine which entries the current user can see
-    let securityFilter: any = { security: Security.PUBLIC };
+    let securityFilter: { security?: Security } = { security: Security.PUBLIC };
 
     if (currentUserId) {
       if (currentUserId === user.id) {

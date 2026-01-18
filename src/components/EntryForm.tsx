@@ -15,14 +15,22 @@ const entrySchema = z.object({
 
 export type EntryInput = z.infer<typeof entrySchema>;
 
+type SubmitResult = {
+  success?: boolean;
+  error?: string;
+  details?: z.ZodIssue[];
+  entryId?: string;
+  username?: string;
+};
+
 type EntryFormProps = {
   initialData?: Partial<EntryInput>;
   mode: 'create' | 'edit';
   entryId?: string;
-  onSubmit: (data: EntryInput) => Promise<any>;
+  onSubmitAction: (data: EntryInput) => Promise<SubmitResult>;
 };
 
-export function EntryForm({ initialData, mode, entryId, onSubmit }: EntryFormProps) {
+export function EntryForm({ initialData, mode, entryId, onSubmitAction }: EntryFormProps) {
   const router = useRouter();
   const [formData, setFormData] = useState<EntryInput>({
     subject: initialData?.subject || '',
@@ -42,7 +50,7 @@ export function EntryForm({ initialData, mode, entryId, onSubmit }: EntryFormPro
 
     try {
       const validatedData = entrySchema.parse(formData);
-      const result = await onSubmit(validatedData);
+      const result = await onSubmitAction(validatedData);
 
       if (result.error) {
         if (result.details) {

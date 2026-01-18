@@ -1,6 +1,5 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { NextRequest } from 'next/server';
 
 export interface StorageAdapter {
   uploadFile(file: File, fileName: string): Promise<string>;
@@ -44,17 +43,17 @@ class LocalStorageAdapter implements StorageAdapter {
 
 // S3 storage adapter (placeholder for future implementation)
 class S3StorageAdapter implements StorageAdapter {
-  async uploadFile(file: File, fileName: string): Promise<string> {
+  async uploadFile(_file: File, _fileName: string): Promise<string> {
     // TODO: Implement S3 upload
     throw new Error('S3 storage not implemented yet');
   }
 
-  async deleteFile(fileName: string): Promise<void> {
+  async deleteFile(_fileName: string): Promise<void> {
     // TODO: Implement S3 delete
     throw new Error('S3 storage not implemented yet');
   }
 
-  getFileUrl(fileName: string): string {
+  getFileUrl(_fileName: string): string {
     // TODO: Return S3 URL
     throw new Error('S3 storage not implemented yet');
   }

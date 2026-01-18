@@ -5,8 +5,12 @@ import { CommentThread, CommentForm } from '@/components/CommentThread';
 import { DayNavigation } from '@/components/Calendar';
 import { notFound } from 'next/navigation';
 
+type CommentWithReplies = {
+  replies?: CommentWithReplies[];
+};
+
 // Helper function to count all comments recursively
-function countComments(comments: any[]): number {
+function countComments(comments: CommentWithReplies[]): number {
   return comments.reduce((total, comment) => {
     return total + 1 + countComments(comment.replies || []);
   }, 0);

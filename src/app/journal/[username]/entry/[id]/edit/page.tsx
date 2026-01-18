@@ -1,6 +1,6 @@
 import { getEntry, updateEntry } from '@/lib/actions/journal';
 import { requireAuth } from '@/lib/auth';
-import { EntryForm } from '@/components/EntryForm';
+import { EntryForm, EntryInput } from '@/components/EntryForm';
 import { notFound } from 'next/navigation';
 
 type PageProps = {
@@ -26,9 +26,9 @@ export default async function EditEntryPage({ params }: PageProps) {
     notFound();
   }
 
-  const handleUpdateEntry = async (data: any) => {
+  const handleUpdateEntry = async (data: EntryInput) => {
     'use server';
-    
+
     const result = await updateEntry(id, data);
     
     if (result.success) {
@@ -54,7 +54,7 @@ export default async function EditEntryPage({ params }: PageProps) {
           music: entry.music || '',
           location: entry.location || '',
         }}
-        onSubmit={handleUpdateEntry}
+        onSubmitAction={handleUpdateEntry}
       />
     </div>
   );

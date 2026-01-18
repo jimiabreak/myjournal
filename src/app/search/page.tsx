@@ -63,18 +63,18 @@ export default function SearchPage() {
       setError(entryResults.error);
     }
 
-    setEntries(entryResults.entries.map((e: any) => ({
+    setEntries(entryResults.entries.map((e) => ({
       id: e.id,
       subject: e.subject,
       contentHtml: e.contentHtml,
-      security: e.security,
+      security: e.security as 'PUBLIC' | 'FRIENDS' | 'PRIVATE',
       mood: e.mood,
       music: e.music,
       location: e.location,
       createdAt: new Date(e.createdAt),
       user: e.user,
       _count: e._count,
-    })) as Entry[]);
+    })));
     setUsers(userResults.users);
     setHasSearched(true);
     setIsSearching(false);

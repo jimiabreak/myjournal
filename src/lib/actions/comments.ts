@@ -81,7 +81,13 @@ export async function createComment(data: CommentInput) {
     }
 
     // Prepare comment data
-    const commentData: any = {
+    const commentData: {
+      entryId: string;
+      contentHtml: string;
+      parentId: string | null;
+      authorId?: string | null;
+      authorName?: string | null;
+    } = {
       entryId: enhancedValidated.entryId,
       contentHtml: sanitizedContent,
       parentId: enhancedValidated.parentId || null,

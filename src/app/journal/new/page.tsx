@@ -1,12 +1,11 @@
 import { requireAuth } from '@/lib/auth';
 import { createEntry } from '@/lib/actions/journal';
-import { EntryForm } from '@/components/EntryForm';
-import { redirect } from 'next/navigation';
+import { EntryForm, EntryInput } from '@/components/EntryForm';
 
 export default async function NewEntryPage() {
   const user = await requireAuth();
 
-  const handleCreateEntry = async (data: any) => {
+  const handleCreateEntry = async (data: EntryInput) => {
     'use server';
     
     const result = await createEntry(data);
@@ -26,7 +25,7 @@ export default async function NewEntryPage() {
     <div>
       <EntryForm
         mode="create"
-        onSubmit={handleCreateEntry}
+        onSubmitAction={handleCreateEntry}
       />
     </div>
   );
