@@ -254,6 +254,37 @@ export async function getFriendsFeed(limit = 20, offset = 0) {
   }
 }
 
+export async function getRecentPublicEntries(limit = 20, offset = 0) {
+  try {
+    const entries = await prisma.entry.findMany({
+      where: {
+        security: 'PUBLIC',
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            username: true,
+            displayName: true,
+            userpicUrl: true,
+          },
+        },
+        _count: {
+          select: { comments: true },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: limit,
+      skip: offset,
+    });
+
+    return { entries };
+  } catch (error) {
+    console.error('Get recent entries error:', error);
+    return { error: 'Failed to load entries', entries: [] };
+  }
+}
+
 export async function getEntry(entryId: string, currentUserId?: string) {
   try {
     // First get basic entry info to check ownership

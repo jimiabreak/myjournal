@@ -1,82 +1,119 @@
-export default function Home() {
+import Link from 'next/link';
+import { getRecentPublicEntries } from '@/lib/actions/journal';
+
+export default async function Home() {
+  const { entries } = await getRecentPublicEntries(5);
+
   return (
-    <div className="space-y-6">
-      <div className="bg-lj-blue-4 border border-lj-blue-2 rounded p-4">
-        <h1 className="text-lj-purple font-bold text-lg mb-4">
-          Welcome to LiveJournal 2003
-        </h1>
-        <p className="text-lj-ink mb-4">
-          This is a nostalgic recreation of the classic LiveJournal interface from 2003.
-          Share your thoughts, connect with friends, and relive the early days of social blogging.
-        </p>
-        <div className="space-y-2">
-          <p className="text-sm text-lj-gray">
-            <strong>New to LiveJournal?</strong> Create your free account today!
-          </p>
-          <p className="text-sm text-lj-gray">
-            <strong>Returning user?</strong> Log in above to access your journal.
+    <div>
+      {/* Welcome Header */}
+      <div className="lj-profile-header" style={{ marginBottom: '10px' }}>
+        <div className="lj-profile-title">
+          <h1 style={{ margin: 0 }}>Welcome to LiveJournal</h1>
+        </div>
+        <div className="lj-profile-content">
+          <p style={{ margin: 0 }}>
+            A place to share your thoughts, connect with friends, and keep a personal journal online.
           </p>
         </div>
       </div>
 
-      <div className="bg-lj-blue-4 border border-lj-blue-2 rounded p-4">
-        <h2 className="text-lj-purple font-bold mb-3">Recent Community Posts</h2>
-        <div className="space-y-3">
-          <div className="border-b border-lj-blue-2 pb-2">
-            <div className="flex items-center space-x-2 mb-1">
-              <a href="/users/example_user" className="text-lj-blue font-bold text-sm">
-                example_user
-              </a>
-              <span className="text-lj-gray text-xs">2 hours ago</span>
-            </div>
-            <p className="text-sm text-lj-ink">
-              Just discovered this amazing coffee shop downtown! The vibes are immaculate ☕
+      {/* Get Started */}
+      <div className="lj-box">
+        <div className="lj-box-header">Get Started</div>
+        <div className="lj-box-content">
+          <div className="lj-box-inner" style={{ marginBottom: '8px' }}>
+            <p className="text-small" style={{ marginBottom: '8px' }}>
+              <strong>New to LiveJournal?</strong><br />
+              Create your free account and start journaling today!
             </p>
+            <Link href="/signup" className="lj-button lj-button-primary">
+              Create Your Journal
+            </Link>
           </div>
-          <div className="border-b border-lj-blue-2 pb-2">
-            <div className="flex items-center space-x-2 mb-1">
-              <a href="/users/music_lover" className="text-lj-blue font-bold text-sm">
-                music_lover
-              </a>
-              <span className="text-lj-gray text-xs">5 hours ago</span>
-            </div>
-            <p className="text-sm text-lj-ink">
-              Anyone else obsessed with the new album from The Strokes? Can't stop listening...
+
+          <div className="lj-box-inner">
+            <p className="text-small" style={{ marginBottom: '8px' }}>
+              <strong>Returning User?</strong><br />
+              Welcome back! Log in to access your journal.
             </p>
-          </div>
-          <div>
-            <div className="flex items-center space-x-2 mb-1">
-              <a href="/users/bookworm23" className="text-lj-blue font-bold text-sm">
-                bookworm23
-              </a>
-              <span className="text-lj-gray text-xs">1 day ago</span>
-            </div>
-            <p className="text-sm text-lj-ink">
-              Finished reading "The Time Traveler's Wife" - absolutely devastated but in the best way 📚
-            </p>
+            <Link href="/login" className="lj-button">
+              Login
+            </Link>
           </div>
         </div>
       </div>
 
-      <div className="bg-lj-blue-4 border border-lj-blue-2 rounded p-4">
-        <h2 className="text-lj-purple font-bold mb-3">LiveJournal Stats</h2>
-        <div className="grid grid-cols-2 gap-4 text-sm">
-          <div>
-            <div className="text-lj-gray">Total Users:</div>
-            <div className="text-lj-ink font-bold">1,247,893</div>
+      {/* Recent Posts */}
+      <div className="lj-box">
+        <div className="lj-box-header">Recent Posts</div>
+        <div className="lj-box-content">
+          {entries.length === 0 ? (
+            <p className="text-small text-muted">No posts yet. Be the first!</p>
+          ) : (
+            entries.map((entry) => (
+              <div key={entry.id} className="lj-box-inner" style={{ marginBottom: '8px' }}>
+                <div style={{ marginBottom: '4px' }}>
+                  <Link href={`/journal/${entry.user.username}`} className="text-small font-bold">
+                    {entry.user.displayName}
+                  </Link>
+                  <span className="text-tiny text-muted" style={{ marginLeft: '8px' }}>
+                    {new Date(entry.createdAt).toLocaleDateString()}
+                  </span>
+                </div>
+                <p className="text-small" style={{ margin: '4px 0' }}>
+                  <Link href={`/journal/${entry.user.username}/entry/${entry.id}`}>
+                    {entry.subject || 'Untitled'}
+                  </Link>
+                </p>
+                {entry.mood && (
+                  <div className="text-tiny" style={{ fontStyle: 'italic', color: 'var(--lj-text-gray)' }}>
+                    mood: {entry.mood}
+                  </div>
+                )}
+              </div>
+            ))
+          )}
+          <div style={{ marginTop: '8px' }}>
+            <Link href="/recent" className="text-small">View all recent posts</Link>
           </div>
-          <div>
-            <div className="text-lj-gray">Active Today:</div>
-            <div className="text-lj-ink font-bold">12,439</div>
-          </div>
-          <div>
-            <div className="text-lj-gray">Posts Today:</div>
-            <div className="text-lj-ink font-bold">8,291</div>
-          </div>
-          <div>
-            <div className="text-lj-gray">Comments Today:</div>
-            <div className="text-lj-ink font-bold">23,847</div>
-          </div>
+        </div>
+      </div>
+
+      {/* Site Stats */}
+      <div className="lj-box">
+        <div className="lj-box-header">Site Stats</div>
+        <div className="lj-box-content">
+          <table style={{ width: '100%', fontSize: '10px', borderCollapse: 'collapse' }}>
+            <tbody>
+              <tr>
+                <td style={{ padding: '2px 4px' }}><strong>Total Users:</strong></td>
+                <td style={{ padding: '2px 4px', textAlign: 'right' }}>1,337</td>
+              </tr>
+              <tr>
+                <td style={{ padding: '2px 4px' }}><strong>Active Today:</strong></td>
+                <td style={{ padding: '2px 4px', textAlign: 'right' }}>42</td>
+              </tr>
+              <tr>
+                <td style={{ padding: '2px 4px' }}><strong>Posts Today:</strong></td>
+                <td style={{ padding: '2px 4px', textAlign: 'right' }}>128</td>
+              </tr>
+              <tr>
+                <td style={{ padding: '2px 4px' }}><strong>Comments Today:</strong></td>
+                <td style={{ padding: '2px 4px', textAlign: 'right' }}>256</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="lj-footer">
+        <div>
+          LiveJournal 2003 |
+          <Link href="/about" style={{ margin: '0 8px' }}>About</Link> |
+          <Link href="/faq" style={{ margin: '0 8px' }}>FAQ</Link> |
+          <Link href="/support" style={{ margin: '0 8px' }}>Support</Link>
         </div>
       </div>
     </div>
