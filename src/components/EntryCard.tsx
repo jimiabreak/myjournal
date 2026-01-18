@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { Userpic } from './Userpic';
+import { deleteEntry } from '@/lib/actions/journal';
 
 type Entry = {
   id: string;
@@ -45,23 +46,61 @@ export function EntryCard({ entry, showFullContent = false, currentUserId }: Ent
     });
   };
 
-  const getSecurityIcon = (security: string) => {
+  const formatTime = (date: Date) => {
+    return date.toLocaleString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    });
+  };
+
+  const getSecurityBadge = (security: string) => {
     switch (security) {
       case 'PRIVATE':
-        return '🔒';
+        return (
+          <span className="lj-security-badge lj-security-private">
+            private
+          </span>
+        );
       case 'FRIENDS':
-        return '👥';
+        return (
+          <span className="lj-security-badge lj-security-friends">
+            friends only
+          </span>
+        );
       default:
-        return '';
+        return (
+          <span className="lj-security-badge lj-security-public">
+            public
+          </span>
+        );
     }
+  };
+
+  // Map moods to cute emoticon-style display
+  const getMoodDisplay = (mood: string) => {
+    const moodEmotes: Record<string, string> = {
+      happy: '(^_^)',
+      sad: '(;_;)',
+      excited: '(\\^o^/)',
+      tired: '(-_-) zzz',
+      angry: '(>_<)',
+      contemplative: '(._. )',
+      creative: '(*^_^*)',
+      loved: '(♥‿♥)',
+      anxious: '(°_°)',
+      peaceful: '(◡‿◡)',
+    };
+    const lowerMood = mood.toLowerCase();
+    return moodEmotes[lowerMood] || `(${mood})`;
   };
 
   return (
     <div className="lj-entry">
-      {/* Entry Header */}
+      {/* ✧ Entry Header ✧ */}
       <div className="lj-entry-header">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center gap-3">
             <Userpic
               src={entry.user.userpicUrl}
               alt={`${entry.user.displayName}'s userpic`}
@@ -70,22 +109,23 @@ export function EntryCard({ entry, showFullContent = false, currentUserId }: Ent
             <div>
               <Link
                 href={`/journal/${entry.user.username}`}
-                className="text-white font-bold hover:underline text-small"
+                className="font-bold hover:underline text-small"
+                style={{ color: 'var(--lj-link)' }}
               >
                 {entry.user.displayName}
               </Link>
-              <div className="text-tiny" style={{ color: 'var(--lj-blue-4)' }}>
-                {entry.user.username}
+              <div className="text-tiny" style={{ color: 'var(--lj-text-gray)' }}>
+                @{entry.user.username}
               </div>
             </div>
           </div>
-          <div className="text-tiny" style={{ color: 'var(--lj-blue-4)' }}>
-            {getSecurityIcon(entry.security)} {entry.security.toLowerCase()}
+          <div className="flex items-center gap-2">
+            {getSecurityBadge(entry.security)}
           </div>
         </div>
       </div>
 
-      {/* Entry Content */}
+      {/* ✧ Entry Content ✧ */}
       <div className="lj-entry-content">
         {entry.subject && (
           <div className="lj-entry-subject">
@@ -103,7 +143,7 @@ export function EntryCard({ entry, showFullContent = false, currentUserId }: Ent
         )}
 
         <div
-          className="lj-prose mb-2"
+          className="lj-prose mb-3"
           dangerouslySetInnerHTML={{
             __html: showFullContent
               ? entry.contentHtml
@@ -113,58 +153,79 @@ export function EntryCard({ entry, showFullContent = false, currentUserId }: Ent
           }}
         />
 
-        {/* Entry Metadata */}
+        {/* ✧ Mood/Music/Location Box - That classic LJ feel ✧ */}
         {(entry.mood || entry.music || entry.location) && (
-          <div className="lj-box-inner mb-2 text-small">
+          <div className="lj-metadata-box">
             {entry.mood && (
-              <div>
-                <span style={{ color: 'var(--lj-gray)' }}>Current mood:</span>{' '}
-                <span>{entry.mood}</span>
+              <div className="mb-1">
+                <span className="lj-metadata-label">current mood:</span>
+                <span className="lj-mood-indicator">
+                  {entry.mood} {getMoodDisplay(entry.mood)}
+                </span>
               </div>
             )}
             {entry.music && (
-              <div>
-                <span style={{ color: 'var(--lj-gray)' }}>Current music:</span>{' '}
-                <span>{entry.music}</span>
+              <div className="mb-1">
+                <span className="lj-metadata-label">current music:</span>
+                <span className="lj-metadata-value">{entry.music}</span>
               </div>
             )}
             {entry.location && (
               <div>
-                <span style={{ color: 'var(--lj-gray)' }}>Location:</span>{' '}
-                <span>{entry.location}</span>
+                <span className="lj-metadata-label">location:</span>
+                <span className="lj-metadata-value">{entry.location}</span>
               </div>
             )}
           </div>
         )}
       </div>
 
-      {/* Entry Footer */}
+      {/* ✧ Entry Footer ✧ */}
       <div className="lj-entry-meta">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2 text-tiny">
-            <span>posted at {formatDate(entry.createdAt)}</span>
-            <span>|</span>
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <div className="flex items-center gap-2 text-tiny">
+            <span style={{ color: 'var(--lj-text-gray)' }}>
+              posted @ {formatTime(entry.createdAt)}
+            </span>
+            <span style={{ color: 'var(--lj-text-gray)' }}>|</span>
+            <span>{formatDate(entry.createdAt).split(',')[0]}</span>
+            <span style={{ color: 'var(--lj-text-gray)' }}>|</span>
             <Link
               href={`/journal/${entry.user.username}/entry/${entry.id}`}
+              style={{ color: 'var(--lj-link)' }}
             >
               {entry._count.comments} comment{entry._count.comments !== 1 ? 's' : ''}
             </Link>
             {isOwner && (
               <>
-                <span>|</span>
+                <span style={{ color: 'var(--lj-text-gray)' }}>|</span>
                 <Link
                   href={`/journal/${entry.user.username}/entry/${entry.id}/edit`}
+                  style={{ color: 'var(--lj-link)' }}
                 >
                   edit
                 </Link>
-                <span>|</span>
-                <button 
-                  onClick={() => {
-                    if (confirm('Are you sure you want to delete this entry? This cannot be undone.')) {
-                      console.log('Delete entry:', entry.id);
+                <span style={{ color: 'var(--lj-text-gray)' }}>|</span>
+                <button
+                  onClick={async () => {
+                    if (confirm('Are you sure you want to delete this entry?')) {
+                      const result = await deleteEntry(entry.id);
+                      if (result.error) {
+                        alert(result.error);
+                      }
+                      // Page will revalidate automatically from server action
                     }
                   }}
-                  style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', color: 'inherit' }}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    padding: 0,
+                    font: 'inherit',
+                    color: 'var(--lj-orange)',
+                    cursor: 'pointer',
+                    fontSize: 'inherit',
+                    textDecoration: 'underline',
+                  }}
                 >
                   delete
                 </button>
@@ -175,8 +236,9 @@ export function EntryCard({ entry, showFullContent = false, currentUserId }: Ent
             <Link
               href={`/journal/${entry.user.username}/entry/${entry.id}`}
               className="text-tiny"
+              style={{ color: 'var(--lj-link)' }}
             >
-              read more →
+              read more ~
             </Link>
           )}
         </div>
