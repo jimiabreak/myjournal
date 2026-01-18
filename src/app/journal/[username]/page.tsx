@@ -5,14 +5,15 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 type PageProps = {
-  params: {
+  params: Promise<{
     username: string;
-  };
+  }>;
 };
 
 export default async function UserJournalPage({ params }: PageProps) {
+  const { username } = await params;
   const currentUser = await getCurrentUser();
-  const result = await getUserEntries(params.username, currentUser?.id);
+  const result = await getUserEntries(username, currentUser?.id);
 
   if (result.error) {
     if (result.error === 'User not found') {
@@ -26,27 +27,22 @@ export default async function UserJournalPage({ params }: PageProps) {
   }
 
   const entries = result.entries!;
-  const isOwnJournal = currentUser?.username === params.username;
+  const isOwnJournal = currentUser?.username === username;
 
   return (
-    <div className="space-y-6">
+    <div>
       {/* Journal Header */}
-      <div className="bg-lj-blue-3 border border-lj-blue-2 rounded">
-        <div className="bg-lj-steel px-4 py-3 border-b border-lj-blue-2">
-          <h1 className="text-white font-bold text-xl">
-            {params.username}'s Journal
-          </h1>
+      <div className="lj-box">
+        <div className="lj-box-header">
+          {username}&apos;s Journal
         </div>
-        <div className="p-4">
+        <div className="lj-box-content">
           <div className="flex items-center justify-between">
-            <p className="text-lj-ink">
+            <p className="text-small">
               {entries.length} entr{entries.length !== 1 ? 'ies' : 'y'} total
             </p>
             {isOwnJournal && (
-              <Link
-                href="/journal/new"
-                className="bg-lj-blue text-white px-4 py-2 rounded hover:bg-lj-blue-2 text-sm font-bold"
-              >
+              <Link href="/journal/new" className="lj-button lj-button-primary">
                 Post New Entry
               </Link>
             )}
@@ -56,17 +52,16 @@ export default async function UserJournalPage({ params }: PageProps) {
 
       {/* Entries List */}
       {entries.length === 0 ? (
-        <div className="bg-lj-blue-4 border border-lj-blue-2 rounded p-6 text-center">
-          <p className="text-lj-gray">
-            {isOwnJournal ? "You haven't posted any entries yet." : "This user hasn't posted any entries yet."}
+        <div className="lj-box-inner text-center" style={{ padding: '20px' }}>
+          <p className="text-small" style={{ color: 'var(--lj-gray)' }}>
+            {isOwnJournal ? "You haven&apos;t posted any entries yet." : "This user hasn&apos;t posted any entries yet."}
           </p>
           {isOwnJournal && (
-            <Link
-              href="/journal/new"
-              className="inline-block mt-4 bg-lj-blue text-white px-4 py-2 rounded hover:bg-lj-blue-2 text-sm"
-            >
-              Create Your First Entry
-            </Link>
+            <div style={{ marginTop: '10px' }}>
+              <Link href="/journal/new" className="lj-button lj-button-primary">
+                Create Your First Entry
+              </Link>
+            </div>
           )}
         </div>
       ) : (
@@ -81,7 +76,18 @@ export default async function UserJournalPage({ params }: PageProps) {
         </div>
       )}
 
-      {/* Pagination would go here in a real app */}
+      {/* Pagination placeholder */}
+      <div className="lj-nav">
+        <a href="#" onClick={(e) => e.preventDefault()}>« Previous 20</a>
+        <a href="#" onClick={(e) => e.preventDefault()}>Next 20 »</a>
+      </div>
+      
+      <div className="lj-footer">
+        <div>
+          LiveJournal 2003 clone • 
+          <span className="lj-accent"> Moo!</span>
+        </div>
+      </div>
     </div>
   );
 }

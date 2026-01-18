@@ -4,14 +4,16 @@ import { EntryForm } from '@/components/EntryForm';
 import { notFound } from 'next/navigation';
 
 type PageProps = {
-  params: {
+  params: Promise<{
+    username: string;
     id: string;
-  };
+  }>;
 };
 
 export default async function EditEntryPage({ params }: PageProps) {
+  const { username, id } = await params;
   const user = await requireAuth();
-  const result = await getEntry(params.id, user.id);
+  const result = await getEntry(id, user.id);
 
   if (result.error) {
     notFound();
@@ -19,15 +21,15 @@ export default async function EditEntryPage({ params }: PageProps) {
 
   const entry = result.entry!;
 
-  // Verify ownership
-  if (entry.userId !== user.id) {
+  // Verify ownership and username match
+  if (entry.userId !== user.id || entry.user.username !== username) {
     notFound();
   }
 
   const handleUpdateEntry = async (data: any) => {
     'use server';
     
-    const result = await updateEntry(params.id, data);
+    const result = await updateEntry(id, data);
     
     if (result.success) {
       return { 
@@ -43,7 +45,7 @@ export default async function EditEntryPage({ params }: PageProps) {
     <div>
       <EntryForm
         mode="edit"
-        entryId={params.id}
+        entryId={id}
         initialData={{
           subject: entry.subject || '',
           contentHtml: entry.contentHtml,

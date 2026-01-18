@@ -71,7 +71,7 @@ export async function createAccount(data: SignupInput) {
     return { success: true, userId: user.id };
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return { error: 'Invalid input data', details: error.errors };
+      return { error: 'Invalid input data', details: error.issues };
     }
     console.error('Signup error:', error);
     return { error: 'Failed to create account' };
@@ -105,7 +105,7 @@ export async function authenticateUser(data: LoginInput) {
     return { success: true, user: { id: user.id, username: user.username, email: user.email } };
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return { error: 'Invalid input data', details: error.errors };
+      return { error: 'Invalid input data', details: error.issues };
     }
     console.error('Login error:', error);
     return { error: 'Authentication failed' };

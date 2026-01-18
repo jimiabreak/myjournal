@@ -63,7 +63,10 @@ export default function SignupPage() {
         if (result.details) {
           const fieldErrors: Record<string, string> = {};
           result.details.forEach((error: z.ZodIssue) => {
-            fieldErrors[error.path[0]] = error.message;
+            const field = error.path[0] as string;
+            if (field) {
+              fieldErrors[field] = error.message;
+            }
           });
           setErrors(fieldErrors);
         } else {
@@ -89,8 +92,8 @@ export default function SignupPage() {
     } catch (error) {
       if (error instanceof z.ZodError) {
         const fieldErrors: Record<string, string> = {};
-        error.errors.forEach((err) => {
-          fieldErrors[err.path[0]] = err.message;
+        error.issues.forEach((err) => {
+          fieldErrors[err.path[0] as string] = err.message;
         });
         setErrors(fieldErrors);
       } else {

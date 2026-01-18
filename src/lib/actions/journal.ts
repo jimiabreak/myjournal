@@ -6,7 +6,9 @@ import { getCurrentUser } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { Security } from '@/generated/prisma';
 import { revalidatePath } from 'next/cache';
+import { journalEntrySchema, sanitizeHtml } from '@/lib/validation';
 
+// Legacy schema mapping to new validation structure
 const entrySchema = z.object({
   subject: z.string().optional(),
   contentHtml: z.string().min(1, 'Entry content is required'),
@@ -14,7 +16,15 @@ const entrySchema = z.object({
   mood: z.string().optional(),
   music: z.string().optional(),
   location: z.string().optional(),
-});
+}).transform((data) => ({
+  title: data.subject || 'Untitled Entry',
+  content: data.contentHtml,
+  visibility: data.security,
+  allowComments: true, // default
+  mood: data.mood,
+  music: data.music,
+  location: data.location
+}));
 
 export type EntryInput = z.infer<typeof entrySchema>;
 
@@ -25,17 +35,22 @@ export async function createEntry(data: EntryInput) {
       throw new Error('Authentication required');
     }
 
-    const validatedData = entrySchema.parse(data);
+    // First validate with legacy schema, then with enhanced validation
+    const legacyValidated = entrySchema.parse(data);
+    const enhancedValidated = journalEntrySchema.parse(legacyValidated);
+    
+    // Sanitize HTML content
+    const sanitizedContent = sanitizeHtml(enhancedValidated.content);
 
     const entry = await prisma.entry.create({
       data: {
         userId: user.id,
-        subject: validatedData.subject || null,
-        contentHtml: validatedData.contentHtml,
-        security: validatedData.security as Security,
-        mood: validatedData.mood || null,
-        music: validatedData.music || null,
-        location: validatedData.location || null,
+        subject: enhancedValidated.title === 'Untitled Entry' ? null : enhancedValidated.title,
+        contentHtml: sanitizedContent,
+        security: enhancedValidated.visibility as Security,
+        mood: legacyValidated.mood || null,
+        music: legacyValidated.music || null,
+        location: legacyValidated.location || null,
       },
     });
 
@@ -43,7 +58,7 @@ export async function createEntry(data: EntryInput) {
     return { success: true, entryId: entry.id };
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return { error: 'Invalid input data', details: error.errors };
+      return { error: 'Invalid input data', details: error.issues };
     }
     console.error('Create entry error:', error);
     return { error: 'Failed to create entry' };
@@ -57,9 +72,7 @@ export async function updateEntry(entryId: string, data: EntryInput) {
       throw new Error('Authentication required');
     }
 
-    const validatedData = entrySchema.parse(data);
-
-    // Check if user owns the entry
+    // Check if user owns the entry first
     const existingEntry = await prisma.entry.findUnique({
       where: { id: entryId },
       select: { userId: true, user: { select: { username: true } } },
@@ -73,15 +86,22 @@ export async function updateEntry(entryId: string, data: EntryInput) {
       return { error: 'Permission denied' };
     }
 
+    // Validate and sanitize after ownership check
+    const legacyValidated = entrySchema.parse(data);
+    const enhancedValidated = journalEntrySchema.parse(legacyValidated);
+    
+    // Sanitize HTML content
+    const sanitizedContent = sanitizeHtml(enhancedValidated.content);
+
     const entry = await prisma.entry.update({
       where: { id: entryId },
       data: {
-        subject: validatedData.subject || null,
-        contentHtml: validatedData.contentHtml,
-        security: validatedData.security as Security,
-        mood: validatedData.mood || null,
-        music: validatedData.music || null,
-        location: validatedData.location || null,
+        subject: enhancedValidated.title === 'Untitled Entry' ? null : enhancedValidated.title,
+        contentHtml: sanitizedContent,
+        security: enhancedValidated.visibility as Security,
+        mood: legacyValidated.mood || null,
+        music: legacyValidated.music || null,
+        location: legacyValidated.location || null,
       },
     });
 
@@ -90,7 +110,7 @@ export async function updateEntry(entryId: string, data: EntryInput) {
     return { success: true };
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return { error: 'Invalid input data', details: error.errors };
+      return { error: 'Invalid input data', details: error.issues };
     }
     console.error('Update entry error:', error);
     return { error: 'Failed to update entry' };
@@ -183,6 +203,18 @@ export async function getUserEntries(username: string, currentUserId?: string) {
 
 export async function getEntry(entryId: string, currentUserId?: string) {
   try {
+    // First get basic entry info to check ownership
+    const basicEntry = await prisma.entry.findUnique({
+      where: { id: entryId },
+      select: { userId: true },
+    });
+
+    if (!basicEntry) {
+      return { error: 'Entry not found' };
+    }
+
+    const isOwner = currentUserId === basicEntry.userId;
+    
     const entry = await prisma.entry.findUnique({
       where: { id: entryId },
       include: {
@@ -194,8 +226,14 @@ export async function getEntry(entryId: string, currentUserId?: string) {
             userpicUrl: true,
           },
         },
+        _count: {
+          select: { comments: true },
+        },
         comments: {
-          where: { state: 'VISIBLE' },
+          where: {
+            parentId: null, // Only top-level comments
+            ...(isOwner ? {} : { state: 'VISIBLE' }), // Entry owner sees all comments
+          },
           include: {
             author: {
               select: {
@@ -205,7 +243,7 @@ export async function getEntry(entryId: string, currentUserId?: string) {
               },
             },
             replies: {
-              where: { state: 'VISIBLE' },
+              where: isOwner ? {} : { state: 'VISIBLE' },
               include: {
                 author: {
                   select: {
@@ -214,11 +252,23 @@ export async function getEntry(entryId: string, currentUserId?: string) {
                     userpicUrl: true,
                   },
                 },
+                replies: {
+                  where: isOwner ? {} : { state: 'VISIBLE' },
+                  include: {
+                    author: {
+                      select: {
+                        username: true,
+                        displayName: true,
+                        userpicUrl: true,
+                      },
+                    },
+                  },
+                  orderBy: { createdAt: 'asc' },
+                },
               },
               orderBy: { createdAt: 'asc' },
             },
           },
-          where: { parentId: null }, // Only top-level comments
           orderBy: { createdAt: 'asc' },
         },
       },

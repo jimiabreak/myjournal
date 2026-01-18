@@ -1,19 +1,28 @@
 import { getEntry } from '@/lib/actions/journal';
 import { getCurrentUser } from '@/lib/auth';
 import { EntryCard } from '@/components/EntryCard';
-import { CommentThread } from '@/components/CommentThread';
+import { CommentThread, CommentForm } from '@/components/CommentThread';
+import { DayNavigation } from '@/components/Calendar';
 import { notFound } from 'next/navigation';
 
+// Helper function to count all comments recursively
+function countComments(comments: any[]): number {
+  return comments.reduce((total, comment) => {
+    return total + 1 + countComments(comment.replies || []);
+  }, 0);
+}
+
 type PageProps = {
-  params: {
+  params: Promise<{
     username: string;
     id: string;
-  };
+  }>;
 };
 
 export default async function EntryPage({ params }: PageProps) {
+  const { username, id } = await params;
   const currentUser = await getCurrentUser();
-  const result = await getEntry(params.id, currentUser?.id);
+  const result = await getEntry(id, currentUser?.id);
 
   if (result.error) {
     if (result.error === 'Entry not found' || result.error === 'Permission denied') {
@@ -29,12 +38,17 @@ export default async function EntryPage({ params }: PageProps) {
   const entry = result.entry!;
 
   // Verify the username matches the entry owner
-  if (entry.user.username !== params.username) {
+  if (entry.user.username !== username) {
     notFound();
   }
 
+  // Count all comments recursively
+  const totalCommentCount = countComments(entry.comments);
+
   return (
-    <div className="space-y-6">
+    <div>
+      <DayNavigation />
+      
       {/* Entry */}
       <EntryCard
         entry={entry}
@@ -43,67 +57,44 @@ export default async function EntryPage({ params }: PageProps) {
       />
 
       {/* Comments Section */}
-      <div className="bg-lj-blue-3 border border-lj-blue-2 rounded">
-        <div className="bg-lj-steel px-4 py-3 border-b border-lj-blue-2">
-          <h2 className="text-white font-bold">
-            Comments ({entry.comments.length})
-          </h2>
+      <div className="lj-comments">
+        <div className="lj-box-header">
+          {totalCommentCount === 0 
+            ? 'No comments' 
+            : totalCommentCount === 1 
+              ? '1 comment' 
+              : `${totalCommentCount} comments`
+          }
         </div>
         
-        <div className="p-4">
+        <div className="lj-box-content">
           {entry.comments.length === 0 ? (
-            <p className="text-lj-gray text-center py-4">
+            <div className="text-center text-small" style={{ color: 'var(--lj-gray)', padding: '15px 0' }}>
               No comments yet. Be the first to comment!
-            </p>
+            </div>
           ) : (
-            <CommentThread comments={entry.comments} />
+            <CommentThread 
+              comments={entry.comments}
+              entryId={entry.id}
+              entryOwnerId={entry.userId}
+              currentUserId={currentUser?.id}
+            />
           )}
 
-          {/* Comment Form */}
-          <div className="mt-6 pt-4 border-t border-lj-blue-2">
-            <div className="bg-lj-blue-4 border border-lj-blue-2 rounded p-4">
-              <h3 className="text-lj-purple font-bold mb-3">Leave a Comment</h3>
-              {currentUser ? (
-                <form className="space-y-3">
-                  <div>
-                    <label htmlFor="comment" className="sr-only">
-                      Comment
-                    </label>
-                    <textarea
-                      id="comment"
-                      name="comment"
-                      rows={4}
-                      className="w-full px-3 py-2 border border-lj-blue-2 rounded focus:outline-none focus:border-lj-blue"
-                      placeholder="Write your comment..."
-                    />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm text-lj-gray">
-                      Posting as <strong>{currentUser.displayName}</strong>
-                    </div>
-                    <button
-                      type="submit"
-                      className="bg-lj-blue text-white px-4 py-2 rounded hover:bg-lj-blue-2 text-sm"
-                    >
-                      Post Comment
-                    </button>
-                  </div>
-                </form>
-              ) : (
-                <div className="text-center py-4">
-                  <p className="text-lj-gray mb-3">
-                    You must be logged in to leave a comment.
-                  </p>
-                  <a
-                    href="/login"
-                    className="bg-lj-blue text-white px-4 py-2 rounded hover:bg-lj-blue-2 text-sm"
-                  >
-                    Log In
-                  </a>
-                </div>
-              )}
-            </div>
+          {/* Main Comment Form */}
+          <div className="lj-separator">
+            <CommentForm 
+              entryId={entry.id}
+              currentUserId={currentUser?.id}
+            />
           </div>
+        </div>
+      </div>
+      
+      <div className="lj-footer">
+        <div>
+          LiveJournal 2003 clone • 
+          <span className="lj-accent"> Baaaah!</span>
         </div>
       </div>
     </div>

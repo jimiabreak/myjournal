@@ -8,7 +8,7 @@
   --lj-blue-2: #6A8EB2;
   --lj-blue-3: #A3ADC8;
   --lj-blue-4: #B4C2D1;
-  --lj-gray: #A2A2AA;
+  --lj-gray: #666666;
   --lj-orange: #CD6719;
   --lj-paper: #FAFAFA;
   --lj-ink: #111111;
@@ -28,14 +28,39 @@
   --font-lj: Verdana, Arial, Helvetica, sans-serif;
 }
 
+/* Global Layout & Typography */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+}
+
 body {
   background: var(--lj-paper);
   color: var(--lj-ink);
   font-family: var(--font-lj);
+  font-size: 11px;
+  line-height: 1.4;
   margin: 0;
   padding: 0;
+  min-height: 100%;
 }
 
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--lj-purple);
+  font-weight: bold;
+  margin: 0.5em 0;
+}
+
+h1 { font-size: 14px; }
+h2 { font-size: 13px; }
+h3 { font-size: 12px; }
+h4, h5, h6 { font-size: 11px; }
+
+/* Links */
 a {
   color: var(--lj-blue);
   text-decoration: underline;
@@ -45,8 +70,403 @@ a:visited {
   color: var(--lj-purple);
 }
 
-/* Utility class for narrow content column */
-.lj-content {
-  max-width: 700px;
+a:hover {
+  color: #1d3a59; /* Slightly darker blue */
+  text-decoration: underline;
+}
+
+/* Layout Utilities */
+.lj-container {
+  max-width: 900px;
   margin: 0 auto;
+  padding: 0 15px;
+}
+
+.lj-content {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* LiveJournal Box Styling */
+.lj-box {
+  background: var(--lj-blue-3);
+  border: 1px solid var(--lj-blue-2);
+  margin-bottom: 10px;
+}
+
+.lj-box-header {
+  background: var(--lj-steel);
+  color: white;
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--lj-blue-2);
+  font-weight: bold;
+  font-size: 11px;
+}
+
+.lj-box-content {
+  background: var(--lj-blue-3);
+  padding: 8px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.lj-box-inner {
+  background: var(--lj-blue-4);
+  border: 1px solid var(--lj-blue-2);
+  padding: 8px;
+}
+
+/* Buttons - Small, Square, No Rounded Corners */
+button, 
+input[type="submit"], 
+input[type="button"],
+.lj-button {
+  background: var(--lj-blue-3);
+  border: 1px solid var(--lj-blue-2);
+  color: var(--lj-ink);
+  cursor: pointer;
+  font-family: var(--font-lj);
+  font-size: 10px;
+  font-weight: bold;
+  padding: 2px 8px;
+  text-decoration: none;
+  display: inline-block;
+  border-radius: 0; /* No rounded corners */
+  line-height: 1.2;
+}
+
+button:hover,
+input[type="submit"]:hover,
+input[type="button"]:hover,
+.lj-button:hover {
+  background: var(--lj-blue-2);
+  border-color: var(--lj-blue);
+}
+
+button:active,
+input[type="submit"]:active,
+input[type="button"]:active,
+.lj-button:active {
+  background: var(--lj-blue);
+  color: white;
+}
+
+/* Primary Button Variant */
+.lj-button-primary {
+  background: var(--lj-blue);
+  color: white;
+  border-color: var(--lj-steel);
+}
+
+.lj-button-primary:hover {
+  background: var(--lj-steel);
+}
+
+/* Form Elements */
+input[type="text"],
+input[type="password"],
+input[type="email"],
+textarea,
+select {
+  background: white;
+  border: 1px solid var(--lj-blue-2);
+  color: var(--lj-ink);
+  font-family: var(--font-lj);
+  font-size: 11px;
+  padding: 2px 4px;
+  border-radius: 0;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--lj-blue);
+  outline: none;
+}
+
+/* LiveJournal userpic styling */
+.lj-userpic {
+  width: 100px;
+  height: 100px;
+  border: 1px solid var(--lj-blue-2);
+  background: var(--lj-blue-4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.lj-userpic img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  display: block;
+}
+
+.lj-userpic-small {
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--lj-blue-2);
+  background: var(--lj-blue-4);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.lj-userpic-small img {
+  width: 16px;
+  height: 16px;
+  object-fit: cover;
+  display: block;
+}
+
+.lj-userpic-medium {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--lj-blue-2);
+  background: var(--lj-blue-4);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.lj-userpic-medium img {
+  width: 32px;
+  height: 32px;
+  object-fit: cover;
+  display: block;
+}
+
+.lj-userpic-placeholder {
+  background: var(--lj-blue-3);
+  text-align: center;
+  color: var(--lj-gray);
+  font-size: 9px;
+}
+
+/* Orange accent styling */
+.lj-accent {
+  color: var(--lj-orange);
+  font-weight: bold;
+  font-size: 9px;
+}
+
+/* Entry styling */
+.lj-entry {
+  background: var(--lj-blue-3);
+  border: 1px solid var(--lj-blue-2);
+  margin-bottom: 15px;
+}
+
+.lj-entry-header {
+  background: var(--lj-steel);
+  color: white;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--lj-blue-2);
+}
+
+.lj-entry-content {
+  background: var(--lj-blue-4);
+  padding: 10px;
+}
+
+.lj-entry-subject {
+  color: var(--lj-purple);
+  font-weight: bold;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.lj-entry-meta {
+  background: var(--lj-blue-3);
+  padding: 6px 10px;
+  border-top: 1px solid var(--lj-blue-2);
+  font-size: 10px;
+  color: var(--lj-gray);
+}
+
+/* Comments styling */
+.lj-comments {
+  background: var(--lj-blue-3);
+  border: 1px solid var(--lj-blue-2);
+  margin-top: 10px;
+}
+
+.lj-comment {
+  background: var(--lj-blue-4);
+  border: 1px solid var(--lj-blue-2);
+  margin: 8px 0;
+}
+
+.lj-comment-header {
+  background: var(--lj-steel);
+  color: white;
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--lj-blue-2);
+  font-size: 10px;
+}
+
+.lj-comment-content {
+  padding: 8px;
+  font-size: 11px;
+}
+
+.lj-comment-reply {
+  margin-left: 30px;
+}
+
+/* Navigation styling */
+.lj-nav {
+  background: var(--lj-blue-3);
+  border: 1px solid var(--lj-blue-2);
+  padding: 4px 8px;
+  margin-bottom: 10px;
+  font-size: 10px;
+}
+
+.lj-nav a {
+  margin-right: 10px;
+}
+
+/* Calendar stub styling */
+.lj-calendar {
+  background: var(--lj-blue-3);
+  border: 1px solid var(--lj-blue-2);
+  text-align: center;
+  padding: 5px;
+  margin-bottom: 10px;
+}
+
+.lj-calendar-header {
+  background: var(--lj-steel);
+  color: white;
+  padding: 3px;
+  font-weight: bold;
+  font-size: 10px;
+  margin-bottom: 3px;
+}
+
+.lj-calendar-nav {
+  font-size: 9px;
+  margin: 2px 0;
+}
+
+.lj-calendar-nav a {
+  margin: 0 5px;
+  text-decoration: none;
+}
+
+/* Day navigation */
+.lj-day-nav {
+  background: var(--lj-blue-3);
+  border: 1px solid var(--lj-blue-2);
+  padding: 3px 8px;
+  font-size: 10px;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+/* Footer styling */
+.lj-footer {
+  margin-top: 20px;
+  padding: 10px;
+  text-align: center;
+  font-size: 9px;
+  color: var(--lj-gray);
+  border-top: 1px solid var(--lj-blue-2);
+}
+
+/* Utility classes */
+.text-tiny { font-size: 9px; }
+.text-small { font-size: 10px; }
+.text-normal { font-size: 11px; }
+
+/* Text wrapping and overflow utilities */
+.break-words {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+.text-wrap {
+  white-space: normal;
+  word-break: break-word;
+}
+
+.lj-separator {
+  border-top: 1px solid var(--lj-blue-2);
+  margin: 10px 0;
+}
+
+/* Remove Tailwind button styling that conflicts */
+button {
+  background-color: var(--lj-blue-3) !important;
+  border-radius: 0 !important;
+}
+
+/* Override any modern styling */
+* {
+  border-radius: 0 !important;
+}
+
+input, textarea, select {
+  border-radius: 0 !important;
+}
+
+/* Prose styling for entry content */
+.lj-prose p {
+  margin: 8px 0;
+}
+
+.lj-prose ul, .lj-prose ol {
+  margin: 8px 0;
+  padding-left: 20px;
+}
+
+.lj-prose blockquote {
+  margin: 8px 20px;
+  padding-left: 10px;
+  border-left: 2px solid var(--lj-blue-2);
+  font-style: italic;
+}
+
+/* Top bar styling */
+.lj-topbar {
+  background: var(--lj-steel);
+  color: white;
+  padding: 8px 0;
+  margin-bottom: 15px;
+  border-bottom: 1px solid var(--lj-blue-2);
+  font-size: 11px;
+}
+
+.lj-topbar a {
+  color: #E8F0FF;
+  margin-right: 15px;
+  text-decoration: none;
+}
+
+.lj-topbar a:visited {
+  color: #E8F0FF;
+}
+
+.lj-topbar a:hover {
+  color: white;
+  text-decoration: underline;
+}
+
+/* Sidebar styling */
+.lj-sidebar {
+  width: 200px;
+  padding-right: 20px;
+}
+
+.lj-main-content {
+  flex: 1;
+  padding-left: 20px;
+  padding-top: 15px;
 }

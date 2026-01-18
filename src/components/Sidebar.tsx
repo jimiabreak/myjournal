@@ -1,12 +1,14 @@
+import { UserSidebar } from './UserSidebar';
+import { Calendar } from './Calendar';
+
 export function Sidebar() {
   const sections = [
     {
-      title: "Welcome!",
+      title: "Navigation",
       links: [
-        { text: "Update Journal", href: "/update" },
-        { text: "Edit Friends", href: "/friends" },
-        { text: "Edit Info", href: "/editinfo" },
-        { text: "Change Style", href: "/style" },
+        { text: "Recent Entries", href: "/journal" },
+        { text: "Random User", href: "/random" },
+        { text: "Search Users", href: "/search" },
       ],
     },
     {
@@ -44,24 +46,18 @@ export function Sidebar() {
   ];
 
   return (
-    <div className="w-60 bg-lj-paper p-4 space-y-4">
+    <div className="lj-sidebar">
+      <UserSidebar />
+      <Calendar />
       {sections.map((section) => (
-        <div
-          key={section.title}
-          className="bg-lj-blue-4 border border-lj-blue-2 rounded"
-        >
-          <div className="bg-lj-blue-3 px-3 py-2 border-b border-lj-blue-2">
-            <h3 className="text-lj-purple font-bold text-sm">
-              {section.title}
-            </h3>
+        <div key={section.title} className="lj-box">
+          <div className="lj-box-header">
+            {section.title}
           </div>
-          <div className="p-3 space-y-1">
+          <div className="lj-box-content">
             {section.links.map((link) => (
-              <div key={link.text}>
-                <a
-                  href={link.href}
-                  className="text-lj-blue text-xs hover:text-lj-blue-2 underline"
-                >
+              <div key={link.text} className="mb-1">
+                <a href={link.href} className="text-tiny break-words">
                   {link.text}
                 </a>
               </div>

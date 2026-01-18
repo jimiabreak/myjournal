@@ -51,8 +51,11 @@ export default function LoginPage() {
     } catch (error) {
       if (error instanceof z.ZodError) {
         const fieldErrors: Record<string, string> = {};
-        error.errors.forEach((err) => {
-          fieldErrors[err.path[0]] = err.message;
+        error.issues.forEach((err) => {
+          const field = err.path[0] as string;
+          if (field) {
+            fieldErrors[field] = err.message;
+          }
         });
         setErrors(fieldErrors);
       } else {

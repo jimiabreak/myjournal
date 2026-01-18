@@ -14,12 +14,14 @@ declare module 'next-auth' {
       username: string;
       email: string;
       displayName: string;
+      image?: string | null;
     };
   }
 
   interface User {
     username: string;
     displayName: string;
+    userpicUrl?: string | null;
   }
 }
 
@@ -27,6 +29,7 @@ declare module 'next-auth/jwt' {
   interface JWT {
     username: string;
     displayName: string;
+    userpicUrl?: string | null;
   }
 }
 
@@ -36,7 +39,7 @@ const loginSchema = z.object({
 });
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
+  adapter: PrismaAdapter(prisma) as any,
   session: {
     strategy: 'jwt',
   },
@@ -61,6 +64,14 @@ export const authOptions: NextAuthOptions = {
                 { email: identifier },
               ],
             },
+            select: {
+              id: true,
+              username: true,
+              email: true,
+              displayName: true,
+              userpicUrl: true,
+              passwordHash: true,
+            },
           });
 
           if (!user) {
@@ -78,6 +89,7 @@ export const authOptions: NextAuthOptions = {
             username: user.username,
             email: user.email,
             displayName: user.displayName,
+            userpicUrl: user.userpicUrl,
           };
         } catch (error) {
           console.error('Auth error:', error);
@@ -87,11 +99,31 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       if (user) {
         token.username = user.username;
         token.displayName = user.displayName;
+        token.userpicUrl = user.userpicUrl;
       }
+      
+      // Refresh user data from database on update
+      if (trigger === 'update' || (trigger === 'signIn' && token.sub)) {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.sub },
+          select: {
+            username: true,
+            displayName: true,
+            userpicUrl: true,
+          },
+        });
+        
+        if (dbUser) {
+          token.username = dbUser.username;
+          token.displayName = dbUser.displayName;
+          token.userpicUrl = dbUser.userpicUrl;
+        }
+      }
+      
       return token;
     },
     async session({ session, token }) {
@@ -99,6 +131,7 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.sub!;
         session.user.username = token.username;
         session.user.displayName = token.displayName;
+        session.user.image = token.userpicUrl;
       }
       return session;
     },

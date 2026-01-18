@@ -22,11 +22,13 @@ export default async function RootLayout({
       <body>
         <SessionProvider session={session}>
           <TopBar />
-          <div className="flex">
-            <Sidebar />
-            <main className="flex-1 lj-content px-4 py-6">
-              {children}
-            </main>
+          <div className="lj-container">
+            <div className="flex">
+              <Sidebar />
+              <main className="lj-main-content">
+                {children}
+              </main>
+            </div>
           </div>
         </SessionProvider>
       </body>

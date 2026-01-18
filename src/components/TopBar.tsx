@@ -7,51 +7,46 @@ export function TopBar() {
   const { data: session, status } = useSession();
 
   return (
-    <div className="bg-lj-steel border-b border-lj-blue-2 px-4 py-2">
-      <div className="lj-content flex items-center justify-between">
+    <div className="lj-topbar">
+      <div className="lj-container flex items-center justify-between">
         <div className="flex items-center space-x-6">
-          <Link href="/" className="text-white font-bold text-lg hover:text-lj-blue-4">
+          <Link href="/" className="text-white font-bold hover:text-lj-blue-4">
             LiveJournal
           </Link>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-1">
             <input
               type="text"
               placeholder="Search LiveJournal"
-              className="px-2 py-1 text-sm border border-lj-blue-2 rounded"
+              className="text-tiny"
+              style={{ width: '120px', padding: '1px 3px' }}
             />
-            <button className="px-3 py-1 bg-lj-blue text-white text-sm rounded hover:bg-lj-blue-2">
+            <button className="lj-button lj-button-primary text-tiny">
               Go
             </button>
           </div>
         </div>
 
         {status === 'loading' ? (
-          <div className="text-white text-sm">Loading...</div>
+          <div className="text-lj-blue-4 text-small">Loading...</div>
         ) : session ? (
-          <div className="flex items-center space-x-3">
-            <span className="text-white text-sm">
+          <div className="flex items-center space-x-2 text-small">
+            <span className="text-white">
               Logged in as <strong>{session.user.displayName}</strong> ({session.user.username})
             </span>
             <span className="text-lj-blue-4">|</span>
             <button
               onClick={() => signOut()}
-              className="text-white text-sm hover:text-lj-blue-4 underline"
+              className="text-lj-blue-4 hover:text-white"
             >
               Logout
             </button>
           </div>
         ) : (
-          <div className="flex items-center space-x-2">
-            <Link
-              href="/login"
-              className="px-3 py-1 bg-lj-blue text-white text-sm rounded hover:bg-lj-blue-2"
-            >
+          <div className="flex items-center space-x-1">
+            <Link href="/login" className="lj-button lj-button-primary">
               Login
             </Link>
-            <Link
-              href="/signup"
-              className="px-3 py-1 bg-lj-purple text-white text-sm rounded hover:opacity-80"
-            >
+            <Link href="/signup" className="lj-button">
               Sign Up
             </Link>
           </div>

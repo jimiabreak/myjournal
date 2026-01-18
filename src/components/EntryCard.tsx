@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { Userpic } from './Userpic';
 
 type Entry = {
   id: string;
@@ -56,55 +57,53 @@ export function EntryCard({ entry, showFullContent = false, currentUserId }: Ent
   };
 
   return (
-    <div className="bg-lj-blue-3 border border-lj-blue-2 rounded mb-6">
+    <div className="lj-entry">
       {/* Entry Header */}
-      <div className="bg-lj-steel px-4 py-2 border-b border-lj-blue-2">
+      <div className="lj-entry-header">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            {entry.user.userpicUrl && (
-              <img
-                src={entry.user.userpicUrl}
-                alt={`${entry.user.displayName}'s userpic`}
-                className="w-8 h-8 rounded border border-lj-blue-2"
-              />
-            )}
+          <div className="flex items-center space-x-2">
+            <Userpic
+              src={entry.user.userpicUrl}
+              alt={`${entry.user.displayName}'s userpic`}
+              size="medium"
+            />
             <div>
               <Link
                 href={`/journal/${entry.user.username}`}
-                className="text-white font-bold hover:text-lj-blue-4"
+                className="text-white font-bold hover:underline text-small"
               >
                 {entry.user.displayName}
               </Link>
-              <div className="text-lj-blue-4 text-xs">
+              <div className="text-tiny" style={{ color: 'var(--lj-blue-4)' }}>
                 {entry.user.username}
               </div>
             </div>
           </div>
-          <div className="text-lj-blue-4 text-sm">
+          <div className="text-tiny" style={{ color: 'var(--lj-blue-4)' }}>
             {getSecurityIcon(entry.security)} {entry.security.toLowerCase()}
           </div>
         </div>
       </div>
 
       {/* Entry Content */}
-      <div className="p-4">
+      <div className="lj-entry-content">
         {entry.subject && (
-          <h2 className="text-lj-purple font-bold text-lg mb-3">
+          <div className="lj-entry-subject">
             {showFullContent ? (
               entry.subject
             ) : (
               <Link
                 href={`/journal/${entry.user.username}/entry/${entry.id}`}
-                className="hover:text-lj-blue"
+                className="hover:underline"
               >
                 {entry.subject}
               </Link>
             )}
-          </h2>
+          </div>
         )}
 
         <div
-          className="text-lj-ink mb-4 prose prose-sm max-w-none"
+          className="lj-prose mb-2"
           dangerouslySetInnerHTML={{
             __html: showFullContent
               ? entry.contentHtml
@@ -116,36 +115,37 @@ export function EntryCard({ entry, showFullContent = false, currentUserId }: Ent
 
         {/* Entry Metadata */}
         {(entry.mood || entry.music || entry.location) && (
-          <div className="bg-lj-blue-4 p-2 rounded mb-4 text-sm">
+          <div className="lj-box-inner mb-2 text-small">
             {entry.mood && (
               <div>
-                <span className="text-lj-gray">Current mood:</span>{' '}
-                <span className="text-lj-ink">{entry.mood}</span>
+                <span style={{ color: 'var(--lj-gray)' }}>Current mood:</span>{' '}
+                <span>{entry.mood}</span>
               </div>
             )}
             {entry.music && (
               <div>
-                <span className="text-lj-gray">Current music:</span>{' '}
-                <span className="text-lj-ink">{entry.music}</span>
+                <span style={{ color: 'var(--lj-gray)' }}>Current music:</span>{' '}
+                <span>{entry.music}</span>
               </div>
             )}
             {entry.location && (
               <div>
-                <span className="text-lj-gray">Location:</span>{' '}
-                <span className="text-lj-ink">{entry.location}</span>
+                <span style={{ color: 'var(--lj-gray)' }}>Location:</span>{' '}
+                <span>{entry.location}</span>
               </div>
             )}
           </div>
         )}
+      </div>
 
-        {/* Entry Footer */}
-        <div className="text-xs text-lj-gray border-t border-lj-blue-2 pt-3 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
+      {/* Entry Footer */}
+      <div className="lj-entry-meta">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2 text-tiny">
             <span>posted at {formatDate(entry.createdAt)}</span>
             <span>|</span>
             <Link
               href={`/journal/${entry.user.username}/entry/${entry.id}`}
-              className="text-lj-blue hover:text-lj-blue-2"
             >
               {entry._count.comments} comment{entry._count.comments !== 1 ? 's' : ''}
             </Link>
@@ -153,8 +153,7 @@ export function EntryCard({ entry, showFullContent = false, currentUserId }: Ent
               <>
                 <span>|</span>
                 <Link
-                  href={`/journal/${entry.id}/edit`}
-                  className="text-lj-blue hover:text-lj-blue-2"
+                  href={`/journal/${entry.user.username}/entry/${entry.id}/edit`}
                 >
                   edit
                 </Link>
@@ -162,11 +161,10 @@ export function EntryCard({ entry, showFullContent = false, currentUserId }: Ent
                 <button 
                   onClick={() => {
                     if (confirm('Are you sure you want to delete this entry? This cannot be undone.')) {
-                      // TODO: Implement delete functionality
                       console.log('Delete entry:', entry.id);
                     }
                   }}
-                  className="text-lj-blue hover:text-lj-blue-2"
+                  style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', color: 'inherit' }}
                 >
                   delete
                 </button>
@@ -176,7 +174,7 @@ export function EntryCard({ entry, showFullContent = false, currentUserId }: Ent
           {!showFullContent && entry.contentHtml.length > 500 && (
             <Link
               href={`/journal/${entry.user.username}/entry/${entry.id}`}
-              className="text-lj-blue hover:text-lj-blue-2"
+              className="text-tiny"
             >
               read more →
             </Link>
