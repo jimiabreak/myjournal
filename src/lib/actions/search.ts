@@ -14,20 +14,17 @@ export async function searchEntries(query: string, limit = 20) {
     const user = await getCurrentUser();
     const friendIds = user ? await getFriendIds(user.id) : [];
 
-    // Build security filter conditions
-    const securityConditions: Array<{ security?: Security; userId?: string | { in: string[] } }> = [
-      // Public entries
+    // Build OR conditions for security access
+    const securityOrConditions: Array<Record<string, unknown>> = [
       { security: Security.PUBLIC },
     ];
 
-    // Own entries
     if (user) {
-      securityConditions.push({ userId: user.id });
+      securityOrConditions.push({ userId: user.id });
     }
 
-    // Friends' FRIENDS entries
     if (user && friendIds.length > 0) {
-      securityConditions.push({ userId: { in: friendIds }, security: Security.FRIENDS });
+      securityOrConditions.push({ userId: { in: friendIds }, security: Security.FRIENDS });
     }
 
     // SQLite uses LIKE for text search
@@ -40,9 +37,7 @@ export async function searchEntries(query: string, limit = 20) {
               { contentHtml: { contains: query.trim() } },
             ],
           },
-          {
-            OR: securityConditions,
-          },
+          { OR: securityOrConditions },
         ],
       },
       include: {

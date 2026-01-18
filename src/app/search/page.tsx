@@ -63,7 +63,7 @@ export default function SearchPage() {
       setError(entryResults.error);
     }
 
-    setEntries(entryResults.entries.map(e => ({
+    setEntries(entryResults.entries.map((e: any) => ({
       id: e.id,
       subject: e.subject,
       contentHtml: e.contentHtml,
@@ -74,7 +74,7 @@ export default function SearchPage() {
       createdAt: new Date(e.createdAt),
       user: e.user,
       _count: e._count,
-    })));
+    })) as Entry[]);
     setUsers(userResults.users);
     setHasSearched(true);
     setIsSearching(false);
