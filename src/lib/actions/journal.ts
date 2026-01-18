@@ -7,6 +7,7 @@ import { redirect } from 'next/navigation';
 import { Security } from '@/generated/prisma';
 import { revalidatePath } from 'next/cache';
 import { journalEntrySchema, sanitizeHtml } from '@/lib/validation';
+import { getFriendIds } from './friends';
 
 // Legacy schema mapping to new validation structure
 const entrySchema = z.object({
@@ -283,9 +284,16 @@ export async function getEntry(entryId: string, currentUserId?: string) {
       return { error: 'Permission denied' };
     }
 
-    if (entry.security === Security.FRIENDS && entry.userId !== currentUserId) {
-      // In a real app, you'd check friendship here
-      return { error: 'Permission denied' };
+    if (entry.security === Security.FRIENDS) {
+      if (!currentUserId) {
+        return { error: 'This entry is friends-only' };
+      }
+      if (entry.userId !== currentUserId) {
+        const friendIds = await getFriendIds(entry.userId);
+        if (!friendIds.includes(currentUserId)) {
+          return { error: 'This entry is friends-only' };
+        }
+      }
     }
 
     return { entry };

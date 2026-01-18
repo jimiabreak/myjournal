@@ -7,6 +7,7 @@ import { CommentState, Security } from '@/generated/prisma';
 import { revalidatePath } from 'next/cache';
 import { commentSchema, sanitizeHtml, checkRateLimit } from '@/lib/validation';
 import { headers } from 'next/headers';
+import { getFriendIds } from './friends';
 
 // Legacy comment schema for backward compatibility
 const legacyCommentSchema = z.object({
@@ -67,9 +68,16 @@ export async function createComment(data: CommentInput) {
       return { error: 'Cannot comment on private entry' };
     }
 
-    if (entry.security === Security.FRIENDS && entry.userId !== user?.id) {
-      // Treat FRIENDS as owner-only for now
-      return { error: 'Cannot comment on friends-only entry' };
+    if (entry.security === Security.FRIENDS) {
+      if (!user) {
+        return { error: 'You must be logged in to comment on friends-only entries' };
+      }
+      if (entry.userId !== user.id) {
+        const friendIds = await getFriendIds(entry.userId);
+        if (!friendIds.includes(user.id)) {
+          return { error: 'Only friends can comment on this entry' };
+        }
+      }
     }
 
     // Prepare comment data
