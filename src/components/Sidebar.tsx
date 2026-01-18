@@ -72,9 +72,9 @@ export function Sidebar() {
         <div className="lj-box-header">Help</div>
         <div className="lj-box-content">
           <div style={{ lineHeight: '1.6' }}>
+            <div><Link href="/about">About</Link></div>
             <div><Link href="/faq">FAQ</Link></div>
-            <div><Link href="/support">Support</Link></div>
-            <div><Link href="/howto">How To</Link></div>
+            <div><Link href="/help">How To</Link></div>
           </div>
         </div>
       </div>
