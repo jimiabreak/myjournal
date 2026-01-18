@@ -420,7 +420,7 @@ export default function ProfilePage() {
       {/* Footer */}
       <div className="lj-footer">
         <div>
-          LiveJournal 2003 |
+          MyJournal |
           <Link href="/about" style={{ margin: '0 8px' }}>About</Link> |
           <Link href="/faq" style={{ margin: '0 8px' }}>FAQ</Link>
         </div>

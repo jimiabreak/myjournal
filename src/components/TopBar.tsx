@@ -25,9 +25,8 @@ export function TopBar() {
                     letterSpacing: '2px',
                   }}
                 >
-                  L<span style={{ fontSize: '14px' }}>IVE</span>J<span style={{ fontSize: '14px' }}>OURNAL</span>
+                  M<span style={{ fontSize: '14px' }}>Y</span>J<span style={{ fontSize: '14px' }}>OURNAL</span>
                 </span>
-                <span style={{ fontSize: '9px', color: '#99BBDD', verticalAlign: 'super' }}>™</span>
               </div>
             </Link>
 

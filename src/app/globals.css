@@ -1,12 +1,12 @@
 @import "tailwindcss";
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   LIVEJOURNAL 2003 - Authentic Recreation
-   A time capsule to when the internet was simpler
+   MYJOURNAL - Personal Journaling Platform
+   Your stories, your space
    ═══════════════════════════════════════════════════════════════════════════ */
 
 :root {
-  /* Authentic 2003 LiveJournal Color Palette */
+  /* MyJournal Color Palette */
   --lj-header-dark: #314D6B;
   --lj-header-light: #4A6B8A;
   --lj-nav-blue: #6699CC;

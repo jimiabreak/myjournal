@@ -5,8 +5,8 @@ import { Sidebar } from "@/components/Sidebar";
 import { ClerkProvider } from '@clerk/nextjs';
 
 export const metadata: Metadata = {
-  title: "LiveJournal 2003",
-  description: "A nostalgic LiveJournal experience",
+  title: "MyJournal",
+  description: "Your personal journaling space",
 };
 
 export default function RootLayout({

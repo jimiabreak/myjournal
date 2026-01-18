@@ -97,8 +97,8 @@ export default async function EntryPage({ params }: PageProps) {
       
       <div className="lj-footer">
         <div>
-          LiveJournal 2003 clone • 
-          <span className="lj-accent"> Baaaah!</span>
+          myjournal •
+          <span className="lj-accent"> express yourself</span>
         </div>
       </div>
     </div>

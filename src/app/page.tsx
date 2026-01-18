@@ -9,7 +9,7 @@ export default async function Home() {
       {/* Welcome Header */}
       <div className="lj-profile-header" style={{ marginBottom: '10px' }}>
         <div className="lj-profile-title">
-          <h1 style={{ margin: 0 }}>Welcome to LiveJournal</h1>
+          <h1 style={{ margin: 0 }}>Welcome to MyJournal</h1>
         </div>
         <div className="lj-profile-content">
           <p style={{ margin: 0 }}>
@@ -24,7 +24,7 @@ export default async function Home() {
         <div className="lj-box-content">
           <div className="lj-box-inner" style={{ marginBottom: '8px' }}>
             <p className="text-small" style={{ marginBottom: '8px' }}>
-              <strong>New to LiveJournal?</strong><br />
+              <strong>New to MyJournal?</strong><br />
               Create your free account and start journaling today!
             </p>
             <Link href="/signup" className="lj-button lj-button-primary">
@@ -110,7 +110,7 @@ export default async function Home() {
       {/* Footer */}
       <div className="lj-footer">
         <div>
-          LiveJournal 2003 |
+          MyJournal |
           <Link href="/about" style={{ margin: '0 8px' }}>About</Link> |
           <Link href="/faq" style={{ margin: '0 8px' }}>FAQ</Link> |
           <Link href="/support" style={{ margin: '0 8px' }}>Support</Link>

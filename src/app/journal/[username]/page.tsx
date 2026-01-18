@@ -230,8 +230,8 @@ export default async function UserJournalPage({ params, searchParams }: PageProp
       {/* ✧ Footer ✧ */}
       <div className="lj-footer">
         <div>
-          livejournal 2004 •
-          <span className="lj-accent"> where the heart posts</span>
+          myjournal •
+          <span className="lj-accent"> your stories, your space</span>
         </div>
       </div>
     </div>

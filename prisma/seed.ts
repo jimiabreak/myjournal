@@ -23,7 +23,7 @@ async function main() {
   const entry1 = await prisma.entry.create({
     data: {
       userId: user.id,
-      subject: 'My First LiveJournal Entry',
+      subject: 'My First Journal Entry',
       contentHtml: '<p>Just discovered this amazing platform! Can\'t wait to share my thoughts with the world. This is so much better than traditional websites.</p><p>The interface is clean and the community seems really welcoming. Looking forward to making some friends here!</p>',
       security: Security.PUBLIC,
       mood: 'excited',
@@ -64,7 +64,7 @@ async function main() {
       entryId: entry1.id,
       authorId: null, // Anonymous comment
       authorName: 'music_lover',
-      contentHtml: '<p>Welcome to LiveJournal! 🎉 You\'re going to love it here. The community is amazing and there\'s always interesting stuff to read.</p>',
+      contentHtml: '<p>Welcome to MyJournal! 🎉 You\'re going to love it here. The community is amazing and there\'s always interesting stuff to read.</p>',
       state: CommentState.VISIBLE,
     },
   });

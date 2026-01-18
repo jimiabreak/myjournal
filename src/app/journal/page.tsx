@@ -89,7 +89,7 @@ export default async function JournalPage() {
       {/* ✧ Footer ✧ */}
       <div className="lj-footer">
         <div>
-          livejournal 2004 •
+          myjournal •
           <span className="lj-accent"> your personal corner of the internet</span>
         </div>
       </div>
