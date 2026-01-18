@@ -89,6 +89,11 @@ export function UserSidebar() {
             </Link>
           </div>
           <div>
+            <Link href="/feed" className="text-tiny">
+              Friends Feed
+            </Link>
+          </div>
+          <div>
             <Link href="/profile" className="text-tiny">
               Edit Profile
             </Link>

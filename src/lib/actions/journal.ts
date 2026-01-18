@@ -202,6 +202,58 @@ export async function getUserEntries(username: string, currentUserId?: string) {
   }
 }
 
+export async function getFriendsFeed(limit = 20, offset = 0) {
+  try {
+    const user = await getCurrentUser();
+    if (!user) {
+      return { error: 'Authentication required', entries: [] };
+    }
+
+    const friendIds = await getFriendIds(user.id);
+
+    // Include own entries + friends' PUBLIC and FRIENDS entries
+    const entries = await prisma.entry.findMany({
+      where: {
+        OR: [
+          // Own entries (all)
+          { userId: user.id },
+          // Friends' public entries
+          {
+            userId: { in: friendIds },
+            security: 'PUBLIC',
+          },
+          // Friends' friends-only entries
+          {
+            userId: { in: friendIds },
+            security: 'FRIENDS',
+          },
+        ],
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            username: true,
+            displayName: true,
+            userpicUrl: true,
+          },
+        },
+        _count: {
+          select: { comments: true },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: limit,
+      skip: offset,
+    });
+
+    return { entries };
+  } catch (error) {
+    console.error('Get friends feed error:', error);
+    return { error: 'Failed to load feed', entries: [] };
+  }
+}
+
 export async function getEntry(entryId: string, currentUserId?: string) {
   try {
     // First get basic entry info to check ownership
