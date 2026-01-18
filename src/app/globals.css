@@ -235,10 +235,14 @@ input[type="button"]:active,
 }
 
 .lj-button-yellow {
-  background: var(--lj-button-yellow);
-  border-color: #CC9900;
-  color: #333333;
+  background: #D97706;
+  border-color: #B45309;
+  color: white;
   font-weight: bold;
+}
+
+.lj-button-yellow:hover {
+  background: #B45309;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -455,6 +459,7 @@ select:focus {
 .lj-sidebar {
   width: 180px;
   padding-right: 15px;
+  padding-top: 10px;
   flex-shrink: 0;
 }
 
