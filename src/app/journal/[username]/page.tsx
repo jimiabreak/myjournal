@@ -12,6 +12,7 @@ type PageProps = {
   params: Promise<{
     username: string;
   }>;
+  searchParams: Promise<{ page?: string }>;
 };
 
 async function getUserProfile(username: string) {
@@ -34,11 +35,16 @@ async function getUserProfile(username: string) {
   });
 }
 
-export default async function UserJournalPage({ params }: PageProps) {
+export default async function UserJournalPage({ params, searchParams }: PageProps) {
   const { username } = await params;
+  const { page } = await searchParams;
+  const currentPage = parseInt(page || '1', 10);
+  const limit = 10;
+  const offset = (currentPage - 1) * limit;
+
   const currentUser = await getCurrentUser();
   const [result, profile] = await Promise.all([
-    getUserEntries(username, currentUser?.id),
+    getUserEntries(username, currentUser?.id, limit, offset),
     getUserProfile(username),
   ]);
 
@@ -56,7 +62,10 @@ export default async function UserJournalPage({ params }: PageProps) {
     );
   }
 
-  const entries = result.entries!;
+  const entries = result.entries || [];
+  const totalCount = result.totalCount || 0;
+  const hasMore = result.hasMore || false;
+  const totalPages = Math.ceil(totalCount / limit);
   const isOwnJournal = currentUser?.id === profile.id;
   const following = currentUser && profile && !isOwnJournal
     ? await isFollowing(profile.id)
@@ -154,7 +163,7 @@ export default async function UserJournalPage({ params }: PageProps) {
       {/* ✧ Journal Navigation ✧ */}
       <div className="lj-nav">
         <span className="text-muted">
-          viewing {entries.length} of {profile._count.entries} entries
+          viewing {entries.length} of {totalCount} entries
         </span>
         <div>
           {isOwnJournal && (
@@ -196,14 +205,25 @@ export default async function UserJournalPage({ params }: PageProps) {
       )}
 
       {/* ✧ Pagination ✧ */}
-      {entries.length > 0 && (
+      {totalPages > 1 && (
         <div className="lj-nav">
-          <a href="#" onClick={(e) => e.preventDefault()}>
-            « earlier entries
-          </a>
-          <a href="#" onClick={(e) => e.preventDefault()}>
-            later entries »
-          </a>
+          {currentPage > 1 ? (
+            <Link href={`/journal/${username}?page=${currentPage - 1}`}>
+              « earlier entries
+            </Link>
+          ) : (
+            <span className="text-muted">« earlier entries</span>
+          )}
+          <span className="text-small text-muted">
+            Page {currentPage} of {totalPages}
+          </span>
+          {hasMore ? (
+            <Link href={`/journal/${username}?page=${currentPage + 1}`}>
+              later entries »
+            </Link>
+          ) : (
+            <span className="text-muted">later entries »</span>
+          )}
         </div>
       )}
 

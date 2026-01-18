@@ -151,7 +151,7 @@ export async function deleteEntry(entryId: string) {
   }
 }
 
-export async function getUserEntries(username: string, currentUserId?: string) {
+export async function getUserEntries(username: string, currentUserId?: string, limit = 10, offset = 0) {
   try {
     const user = await prisma.user.findUnique({
       where: { username },
@@ -159,12 +159,12 @@ export async function getUserEntries(username: string, currentUserId?: string) {
     });
 
     if (!user) {
-      return { error: 'User not found' };
+      return { error: 'User not found', entries: [], totalCount: 0, hasMore: false };
     }
 
     // Determine which entries the current user can see
     let securityFilter: any = { security: Security.PUBLIC };
-    
+
     if (currentUserId) {
       if (currentUserId === user.id) {
         // User can see all their own entries
@@ -175,30 +175,41 @@ export async function getUserEntries(username: string, currentUserId?: string) {
       }
     }
 
-    const entries = await prisma.entry.findMany({
-      where: {
-        userId: user.id,
-        ...securityFilter,
-      },
-      include: {
-        user: {
-          select: {
-            username: true,
-            displayName: true,
-            userpicUrl: true,
+    const whereClause = {
+      userId: user.id,
+      ...securityFilter,
+    };
+
+    const [entries, totalCount] = await Promise.all([
+      prisma.entry.findMany({
+        where: whereClause,
+        include: {
+          user: {
+            select: {
+              username: true,
+              displayName: true,
+              userpicUrl: true,
+            },
+          },
+          _count: {
+            select: { comments: true },
           },
         },
-        _count: {
-          select: { comments: true },
-        },
-      },
-      orderBy: { createdAt: 'desc' },
-    });
+        orderBy: { createdAt: 'desc' },
+        take: limit,
+        skip: offset,
+      }),
+      prisma.entry.count({ where: whereClause }),
+    ]);
 
-    return { entries };
+    return {
+      entries,
+      totalCount,
+      hasMore: offset + entries.length < totalCount
+    };
   } catch (error) {
     console.error('Get user entries error:', error);
-    return { error: 'Failed to fetch entries' };
+    return { error: 'Failed to fetch entries', entries: [], totalCount: 0, hasMore: false };
   }
 }
 
