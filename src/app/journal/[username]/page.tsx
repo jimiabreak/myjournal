@@ -6,7 +6,6 @@ import { FollowButton } from '@/components/FollowButton';
 import { isFollowing } from '@/lib/actions/friends';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { prisma } from '@/lib/prisma';
 
 type PageProps = {
   params: Promise<{
@@ -16,6 +15,11 @@ type PageProps = {
 };
 
 async function getUserProfile(username: string) {
+  // Return null if DATABASE_URL is not available
+  if (!process.env.DATABASE_URL) {
+    return null;
+  }
+  const { prisma } = await import('@/lib/prisma');
   return prisma.user.findUnique({
     where: { username },
     select: {

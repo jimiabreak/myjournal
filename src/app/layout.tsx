@@ -4,6 +4,9 @@ import { TopBar } from "@/components/TopBar";
 import { Sidebar } from "@/components/Sidebar";
 import { ClerkProvider } from '@clerk/nextjs';
 
+// Force dynamic rendering to avoid static generation issues with Clerk and database
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: "MyJournal",
   description: "Your personal journaling space",

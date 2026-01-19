@@ -1,6 +1,5 @@
 'use server';
 
-import { prisma } from '@/lib/prisma';
 import { unstable_cache } from 'next/cache';
 
 export type SiteStats = {
@@ -13,8 +12,25 @@ export type SiteStats = {
   postsPerMinute: number;
 };
 
+const defaultStats: SiteStats = {
+  totalUsers: 0,
+  activeUsers: 0,
+  activeToday: 0,
+  postsToday: 0,
+  commentsToday: 0,
+  postsPerHour: 0,
+  postsPerMinute: 0
+};
+
 async function fetchStats(): Promise<SiteStats> {
+  // Return default stats if DATABASE_URL is not available (e.g., during build)
+  if (!process.env.DATABASE_URL) {
+    return defaultStats;
+  }
+
   try {
+    // Dynamic import to avoid initialization errors when DATABASE_URL is missing
+    const { prisma } = await import('@/lib/prisma');
     const now = new Date();
     const todayStart = new Date(now);
     todayStart.setHours(0, 0, 0, 0);
@@ -84,15 +100,7 @@ async function fetchStats(): Promise<SiteStats> {
     };
   } catch (error) {
     console.error('Failed to fetch stats:', error);
-    return {
-      totalUsers: 0,
-      activeUsers: 0,
-      activeToday: 0,
-      postsToday: 0,
-      commentsToday: 0,
-      postsPerHour: 0,
-      postsPerMinute: 0
-    };
+    return defaultStats;
   }
 }
 

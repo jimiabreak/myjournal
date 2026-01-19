@@ -1,13 +1,20 @@
 import { auth, currentUser } from '@clerk/nextjs/server';
-import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
 
 export async function getCurrentUser() {
+  // Return null if DATABASE_URL is not available (e.g., during build)
+  if (!process.env.DATABASE_URL) {
+    return null;
+  }
+
   const { userId } = await auth();
 
   if (!userId) {
     return null;
   }
+
+  // Dynamic import to avoid issues when DATABASE_URL is missing
+  const { prisma } = await import('@/lib/prisma');
 
   // Try to find existing user
   let user = await prisma.user.findUnique({
