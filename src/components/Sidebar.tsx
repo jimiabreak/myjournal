@@ -1,8 +1,11 @@
 import { UserSidebar } from './UserSidebar';
 import { Calendar } from './Calendar';
 import Link from 'next/link';
+import { getStats } from '@/lib/actions/stats';
 
-export function Sidebar() {
+export async function Sidebar() {
+  const stats = await getStats();
+
   return (
     <div className="lj-sidebar">
       {/* User Box */}
@@ -17,11 +20,11 @@ export function Sidebar() {
         <div className="lj-user-stats-content">
           <div className="lj-user-stats-row">
             <span className="lj-user-stats-label">Total:</span>
-            <span className="lj-user-stats-value">1378751</span>
+            <span className="lj-user-stats-value">{stats.totalUsers.toLocaleString()}</span>
           </div>
           <div className="lj-user-stats-row">
             <span className="lj-user-stats-label">Active:</span>
-            <span className="lj-user-stats-value">650079</span>
+            <span className="lj-user-stats-value">{stats.activeUsers.toLocaleString()}</span>
           </div>
         </div>
       </div>
@@ -32,14 +35,14 @@ export function Sidebar() {
         <div className="lj-user-stats-content">
           <div className="lj-user-stats-row">
             <span className="lj-user-stats-label">Per Hour:</span>
-            <span className="lj-user-stats-value">8654</span>
+            <span className="lj-user-stats-value">{stats.postsPerHour.toLocaleString()}</span>
           </div>
           <div className="lj-user-stats-row">
             <span className="lj-user-stats-label">Per Minute:</span>
-            <span className="lj-user-stats-value">144</span>
+            <span className="lj-user-stats-value">{stats.postsPerMinute.toLocaleString()}</span>
           </div>
           <div style={{ marginTop: '4px' }}>
-            <Link href="/latest">Latest Posts</Link>
+            <Link href="/recent">Latest Posts</Link>
             <span style={{
               background: '#FF6600',
               color: 'white',
