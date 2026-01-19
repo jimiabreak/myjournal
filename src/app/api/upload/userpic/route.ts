@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { 
-  getStorageAdapter, 
-  generateUserpicFileName, 
+import {
+  getStorageAdapter,
+  generateUserpicFileName,
   validateImageFile,
-  extractUserpicFileName
 } from '@/lib/storage';
+
+// Force Node.js runtime (required for fs operations)
+export const runtime = 'nodejs';
 
 export async function POST(request: NextRequest) {
   try {
@@ -42,13 +44,11 @@ export async function POST(request: NextRequest) {
 
     // Delete old userpic if it exists
     if (currentUser?.userpicUrl) {
-      const oldFileName = extractUserpicFileName(currentUser.userpicUrl);
-      if (oldFileName) {
-        try {
-          await storage.deleteFile(oldFileName);
-        } catch (error) {
-          console.warn('Failed to delete old userpic:', error);
-        }
+      try {
+        // Pass the full URL - adapters handle extraction as needed
+        await storage.deleteFile(currentUser.userpicUrl);
+      } catch (error) {
+        console.warn('Failed to delete old userpic:', error);
       }
     }
 
@@ -65,8 +65,9 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('Userpic upload error:', error);
-    return NextResponse.json({ 
-      error: 'Failed to upload userpic' 
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    return NextResponse.json({
+      error: `Failed to upload userpic: ${errorMessage}`
     }, { status: 500 });
   }
 }
@@ -85,14 +86,12 @@ export async function DELETE(_request: NextRequest) {
     });
 
     if (currentUser?.userpicUrl) {
-      const fileName = extractUserpicFileName(currentUser.userpicUrl);
-      if (fileName) {
-        const storage = getStorageAdapter();
-        try {
-          await storage.deleteFile(fileName);
-        } catch (error) {
-          console.warn('Failed to delete userpic file:', error);
-        }
+      const storage = getStorageAdapter();
+      try {
+        // Pass the full URL - adapters handle extraction as needed
+        await storage.deleteFile(currentUser.userpicUrl);
+      } catch (error) {
+        console.warn('Failed to delete userpic file:', error);
       }
     }
 

@@ -69,9 +69,8 @@ export async function Sidebar() {
         <div className="lj-box-content">
           <div style={{ lineHeight: '1.6' }}>
             <div><Link href="/">Home</Link></div>
-            <div><Link href="/random">Random</Link></div>
+            <div><Link href="/recent">Recent</Link></div>
             <div><Link href="/search">Search</Link></div>
-            <div><Link href="/directory">Directory</Link></div>
           </div>
         </div>
       </div>

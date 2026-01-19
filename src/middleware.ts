@@ -7,7 +7,16 @@ const isProtectedRoute = createRouteMatcher([
   '/feed(.*)',
 ]);
 
+const isPublicApiRoute = createRouteMatcher([
+  '/api/webhooks(.*)',
+]);
+
 export default clerkMiddleware(async (auth, req) => {
+  // Skip protection for public API routes
+  if (isPublicApiRoute(req)) {
+    return;
+  }
+
   if (isProtectedRoute(req)) {
     await auth.protect();
   }

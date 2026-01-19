@@ -27,10 +27,10 @@ export async function AuthenticatedHomepage() {
         <div className="lj-box-header">Quick Actions</div>
         <div className="lj-box-content">
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-            <Link href="/update" className="lj-button lj-button-primary">
+            <Link href="/journal/new" className="lj-button lj-button-primary">
               Post New Entry
             </Link>
-            <Link href="/friends" className="lj-button">
+            <Link href="/feed" className="lj-button">
               Friends Feed
             </Link>
           </div>

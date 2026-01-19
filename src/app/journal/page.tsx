@@ -45,10 +45,9 @@ export default async function JournalPage() {
               <div style={{ color: 'var(--lj-electric-blue)', fontSize: '20px' }}>☆</div>
               <div className="text-small" style={{ color: 'var(--lj-soft-pink)' }}>edit profile</div>
             </Link>
-            <Link href="#" className="lj-box-inner text-center block" style={{ textDecoration: 'none' }} onClick={(e) => e.preventDefault()}>
+            <Link href="/friends" className="lj-box-inner text-center block" style={{ textDecoration: 'none' }}>
               <div style={{ color: 'var(--lj-hot-pink)', fontSize: '20px' }}>♥</div>
               <div className="text-small" style={{ color: 'var(--lj-soft-pink)' }}>friends</div>
-              <div className="text-tiny text-muted">(coming soon)</div>
             </Link>
           </div>
         </div>

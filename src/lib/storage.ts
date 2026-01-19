@@ -1,9 +1,10 @@
 import fs from 'fs/promises';
 import path from 'path';
+import { put, del } from '@vercel/blob';
 
 export interface StorageAdapter {
   uploadFile(file: File, fileName: string): Promise<string>;
-  deleteFile(fileName: string): Promise<void>;
+  deleteFile(fileNameOrUrl: string): Promise<void>;
   getFileUrl(fileName: string): string;
 }
 
@@ -12,21 +13,34 @@ class LocalStorageAdapter implements StorageAdapter {
   private uploadDir = path.join(process.cwd(), 'public', 'userpics');
 
   async uploadFile(file: File, fileName: string): Promise<string> {
+    console.log('Upload attempt:', { fileName, uploadDir: this.uploadDir, cwd: process.cwd() });
+
     // Ensure upload directory exists
     try {
       await fs.access(this.uploadDir);
     } catch {
+      console.log('Creating upload directory:', this.uploadDir);
       await fs.mkdir(this.uploadDir, { recursive: true });
     }
 
     const filePath = path.join(this.uploadDir, fileName);
-    const buffer = Buffer.from(await file.arrayBuffer());
+    console.log('Writing file to:', filePath);
+
+    const arrayBuffer = await file.arrayBuffer();
+    console.log('File size:', arrayBuffer.byteLength);
+
+    const buffer = Buffer.from(arrayBuffer);
     await fs.writeFile(filePath, buffer);
-    
+    console.log('File written successfully');
+
     return `/userpics/${fileName}`;
   }
 
-  async deleteFile(fileName: string): Promise<void> {
+  async deleteFile(fileNameOrUrl: string): Promise<void> {
+    // Extract filename from URL if needed (e.g., "/userpics/filename.jpg" -> "filename.jpg")
+    const fileName = fileNameOrUrl.includes('/')
+      ? fileNameOrUrl.split('/').pop() || fileNameOrUrl
+      : fileNameOrUrl;
     const filePath = path.join(this.uploadDir, fileName);
     try {
       await fs.unlink(filePath);
@@ -41,31 +55,44 @@ class LocalStorageAdapter implements StorageAdapter {
   }
 }
 
-// S3 storage adapter (placeholder for future implementation)
-class S3StorageAdapter implements StorageAdapter {
-  async uploadFile(_file: File, _fileName: string): Promise<string> {
-    // TODO: Implement S3 upload
-    throw new Error('S3 storage not implemented yet');
+// Vercel Blob storage adapter
+class VercelBlobAdapter implements StorageAdapter {
+  async uploadFile(file: File, fileName: string): Promise<string> {
+    console.log('Vercel Blob upload attempt:', { fileName, fileSize: file.size });
+
+    const blob = await put(`userpics/${fileName}`, file, {
+      access: 'public',
+      addRandomSuffix: false,
+    });
+
+    console.log('Vercel Blob upload success:', blob.url);
+    return blob.url;
   }
 
-  async deleteFile(_fileName: string): Promise<void> {
-    // TODO: Implement S3 delete
-    throw new Error('S3 storage not implemented yet');
+  async deleteFile(url: string): Promise<void> {
+    // Vercel Blob delete requires the full URL
+    try {
+      await del(url);
+      console.log('Vercel Blob delete success:', url);
+    } catch (error) {
+      console.warn('Vercel Blob delete failed:', url, error);
+    }
   }
 
-  getFileUrl(_fileName: string): string {
-    // TODO: Return S3 URL
-    throw new Error('S3 storage not implemented yet');
+  getFileUrl(fileName: string): string {
+    // For Vercel Blob, the URL is returned from uploadFile
+    // This method is only used for local storage compatibility
+    return fileName;
   }
 }
 
 // Factory function to get the appropriate storage adapter
 export function getStorageAdapter(): StorageAdapter {
   const storageType = process.env.STORAGE_TYPE || 'local';
-  
+
   switch (storageType) {
-    case 's3':
-      return new S3StorageAdapter();
+    case 'vercel-blob':
+      return new VercelBlobAdapter();
     case 'local':
     default:
       return new LocalStorageAdapter();
