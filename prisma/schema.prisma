@@ -35,6 +35,14 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
+  // New profile fields
+  name         String?   // Full name (separate from displayName)
+  birthday     DateTime?
+  location     String?
+  website      String?   // Personal website URL
+  contactEmail String?   // Optional public contact email
+  socialLinks  String?   // JSON string for social handles
+
   entries  Entry[]
   comments Comment[]
   accounts Account[]

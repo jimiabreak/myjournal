@@ -2,6 +2,7 @@
 
 import { SignedIn, SignedOut, UserButton, useUser } from '@clerk/nextjs';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export function TopBar() {
   const { user, isLoaded } = useUser();
@@ -41,8 +42,15 @@ export function TopBar() {
                       Logged in as{' '}
                       <Link
                         href={`/journal/${user?.username || user?.id}`}
-                        style={{ color: 'white', fontWeight: 'bold' }}
+                        style={{ color: 'white', fontWeight: 'bold', textDecoration: 'none' }}
                       >
+                        <Image
+                          src="/icons/userinfo.svg"
+                          alt=""
+                          width={16}
+                          height={16}
+                          style={{ display: 'inline', verticalAlign: 'middle', marginRight: '2px', filter: 'brightness(0) invert(1)' }}
+                        />
                         {user?.username || user?.firstName || 'User'}
                       </Link>
                     </span>

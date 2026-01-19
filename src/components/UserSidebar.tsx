@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useUser } from '@clerk/nextjs';
 import { Userpic } from './Userpic';
+import { UsernameLink } from './UsernameLink';
 
 export function UserSidebar() {
   const { user, isSignedIn } = useUser();
@@ -53,12 +54,11 @@ export function UserSidebar() {
           {/* User Info */}
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ marginBottom: '4px' }}>
-              <Link
-                href={`/journal/${username}`}
+              <UsernameLink
+                username={username}
+                displayName={displayName}
                 className="font-bold text-small"
-              >
-                {displayName}
-              </Link>
+              />
               <p className="text-tiny" style={{ color: 'var(--lj-text-gray)' }}>
                 @{username}
               </p>

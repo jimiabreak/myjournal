@@ -25,6 +25,7 @@ type CommentThreadProps = {
 import { useState } from 'react';
 import { createComment, updateCommentState } from '@/lib/actions/comments';
 import { Userpic } from './Userpic';
+import { UsernameLink } from './UsernameLink';
 
 export function CommentThread({ 
   comments, 
@@ -76,12 +77,15 @@ export function CommentThread({
                   alt={`${comment.author?.displayName || comment.authorName}'s userpic`}
                   size="small"
                 />
-                <span className="text-white font-bold text-tiny">
-                  {comment.author ? comment.author.displayName : comment.authorName}
-                </span>
-                {comment.author && (
-                  <span className="text-tiny" style={{ color: 'var(--lj-blue-4)' }}>
-                    ({comment.author.username})
+                {comment.author ? (
+                  <UsernameLink
+                    username={comment.author.username}
+                    displayName={comment.author.displayName}
+                    className="text-tiny"
+                  />
+                ) : (
+                  <span className="text-white font-bold text-tiny">
+                    {comment.authorName}
                   </span>
                 )}
                 <span className="text-tiny" style={{ color: 'var(--lj-blue-4)' }}>

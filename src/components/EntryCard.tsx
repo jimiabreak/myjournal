@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { Userpic } from './Userpic';
+import { UsernameLink } from './UsernameLink';
 import { deleteEntry } from '@/lib/actions/journal';
 
 type Entry = {
@@ -107,13 +108,11 @@ export function EntryCard({ entry, showFullContent = false, currentUserId }: Ent
               size="medium"
             />
             <div>
-              <Link
-                href={`/journal/${entry.user.username}`}
-                className="font-bold hover:underline text-small"
-                style={{ color: 'var(--lj-link)' }}
-              >
-                {entry.user.displayName}
-              </Link>
+              <UsernameLink
+                username={entry.user.username}
+                displayName={entry.user.displayName}
+                className="font-bold text-small"
+              />
               <div className="text-tiny" style={{ color: 'var(--lj-text-gray)' }}>
                 @{entry.user.username}
               </div>

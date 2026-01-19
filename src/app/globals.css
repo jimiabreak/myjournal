@@ -925,3 +925,57 @@ button {
   color: var(--lj-text-gray);
   margin-top: 8px;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   USERNAME LINK - Userinfo icon + username
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.userinfo-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 2px;
+  vertical-align: middle;
+  display: inline;
+}
+
+.username-link {
+  color: var(--lj-link);
+  text-decoration: none;
+}
+
+.username-link:hover {
+  text-decoration: underline;
+}
+
+.username-link:visited {
+  color: var(--lj-link-visited);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   COLLAPSIBLE SECTIONS - Profile page sections
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.lj-section-header {
+  cursor: pointer;
+  font-weight: bold;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--lj-box-border);
+  user-select: none;
+}
+
+.lj-section-header::before {
+  content: "▼ ";
+  font-size: 10px;
+}
+
+.lj-section-header.collapsed::before {
+  content: "▶ ";
+}
+
+.lj-section-content {
+  padding: 8px 0;
+}
+
+.lj-section-content.collapsed {
+  display: none;
+}

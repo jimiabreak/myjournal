@@ -53,6 +53,16 @@ export const commentSchema = z.object({
     .optional()
 });
 
+export const socialLinksSchema = z.object({
+  twitter: z.string().max(50).optional(),
+  instagram: z.string().max(50).optional(),
+  bluesky: z.string().max(100).optional(),
+  customUrl: z.string().url().max(500).optional().or(z.literal('')),
+  customLabel: z.string().max(50).optional(),
+}).optional().nullable();
+
+export type SocialLinks = z.infer<typeof socialLinksSchema>;
+
 export const profileUpdateSchema = z.object({
   displayName: z.string()
     .min(1, 'Display name is required')
@@ -61,7 +71,31 @@ export const profileUpdateSchema = z.object({
   bio: z.string()
     .max(1000, 'Bio must be less than 1,000 characters')
     .optional()
+    .nullable(),
+  name: z.string()
+    .max(100, 'Name must be less than 100 characters')
+    .optional()
+    .nullable(),
+  birthday: z.string()
+    .optional()
+    .nullable(),
+  location: z.string()
+    .max(100, 'Location must be less than 100 characters')
+    .optional()
+    .nullable(),
+  website: z.string()
+    .url('Invalid website URL')
+    .max(500, 'Website URL must be less than 500 characters')
+    .optional()
     .nullable()
+    .or(z.literal('')),
+  contactEmail: z.string()
+    .email('Invalid contact email')
+    .max(320, 'Email must be less than 320 characters')
+    .optional()
+    .nullable()
+    .or(z.literal('')),
+  socialLinks: socialLinksSchema,
 });
 
 export const usernameSchema = z.string()
