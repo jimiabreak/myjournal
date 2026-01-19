@@ -1,14 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { getStats } from '@/lib/actions/stats';
-import { getRecentPublicEntries } from '@/lib/actions/journal';
 
-export async function PublicHomepage() {
-  const [stats, { entries }] = await Promise.all([
-    getStats(),
-    getRecentPublicEntries(5)
-  ]);
-
+export function PublicHomepage() {
   return (
     <div>
       {/* Welcome Hero Section */}
@@ -85,66 +78,28 @@ export async function PublicHomepage() {
         </div>
       </div>
 
-      {/* Recent Posts */}
+      {/* About MyJournal */}
       <div className="lj-box">
-        <div className="lj-box-header">Recent Posts</div>
+        <div className="lj-box-header">About MyJournal</div>
         <div className="lj-box-content">
-          {entries.length === 0 ? (
-            <p className="text-small text-muted">No posts yet. Be the first!</p>
-          ) : (
-            entries.map((entry) => (
-              <div key={entry.id} className="lj-box-inner" style={{ marginBottom: '8px' }}>
-                <div style={{ marginBottom: '4px' }}>
-                  <Link href={`/journal/${entry.user.username}`} className="text-small font-bold">
-                    {entry.user.displayName}
-                  </Link>
-                  <span className="text-tiny text-muted" style={{ marginLeft: '8px' }}>
-                    {new Date(entry.createdAt).toLocaleDateString()}
-                  </span>
-                </div>
-                <p className="text-small" style={{ margin: '4px 0' }}>
-                  <Link href={`/journal/${entry.user.username}/entry/${entry.id}`}>
-                    {entry.subject || 'Untitled'}
-                  </Link>
-                </p>
-                {entry.mood && (
-                  <div className="text-tiny" style={{ fontStyle: 'italic', color: 'var(--lj-text-gray)' }}>
-                    mood: {entry.mood}
-                  </div>
-                )}
-              </div>
-            ))
-          )}
-          <div style={{ marginTop: '8px' }}>
-            <Link href="/recent" className="text-small">View all recent posts</Link>
-          </div>
-        </div>
-      </div>
-
-      {/* Site Stats */}
-      <div className="lj-box">
-        <div className="lj-box-header">Site Stats</div>
-        <div className="lj-box-content">
-          <table style={{ width: '100%', fontSize: '10px', borderCollapse: 'collapse' }}>
-            <tbody>
-              <tr>
-                <td style={{ padding: '2px 4px' }}><strong>Total Users:</strong></td>
-                <td style={{ padding: '2px 4px', textAlign: 'right' }}>{stats.totalUsers.toLocaleString()}</td>
-              </tr>
-              <tr>
-                <td style={{ padding: '2px 4px' }}><strong>Active Today:</strong></td>
-                <td style={{ padding: '2px 4px', textAlign: 'right' }}>{stats.activeToday.toLocaleString()}</td>
-              </tr>
-              <tr>
-                <td style={{ padding: '2px 4px' }}><strong>Posts Today:</strong></td>
-                <td style={{ padding: '2px 4px', textAlign: 'right' }}>{stats.postsToday.toLocaleString()}</td>
-              </tr>
-              <tr>
-                <td style={{ padding: '2px 4px' }}><strong>Comments Today:</strong></td>
-                <td style={{ padding: '2px 4px', textAlign: 'right' }}>{stats.commentsToday.toLocaleString()}</td>
-              </tr>
-            </tbody>
-          </table>
+          <p className="text-small" style={{ marginBottom: '8px' }}>
+            MyJournal is a simple-to-use (but extremely powerful and customizable)
+            personal publishing tool, inspired by the classic blogging platforms of the early 2000s.
+          </p>
+          <p className="text-small" style={{ marginBottom: '8px' }}>
+            <strong>Features include:</strong>
+          </p>
+          <ul className="text-small" style={{ margin: '0 0 8px 20px', paddingLeft: '0' }}>
+            <li>Private journaling with customizable privacy settings</li>
+            <li>Connect with friends and share your thoughts</li>
+            <li>Mood tracking and music/location metadata</li>
+            <li>Threaded comments and discussions</li>
+            <li>Classic 2003-era aesthetic</li>
+          </ul>
+          <p className="text-small">
+            <Link href="/about">Learn more about MyJournal</Link> |
+            <Link href="/faq" style={{ marginLeft: '8px' }}>Read the FAQ</Link>
+          </p>
         </div>
       </div>
 
