@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Background circle -->
+  <circle cx="32" cy="32" r="30" fill="#C5D9E8" stroke="#6699CC" stroke-width="2"/>
+  <!-- Document -->
+  <rect x="18" y="12" width="28" height="36" fill="#FFFFFF" stroke="#6699CC" stroke-width="2"/>
+  <rect x="18" y="12" width="28" height="8" fill="#6699CC"/>
+  <!-- Lines on document -->
+  <line x1="22" y1="28" x2="42" y2="28" stroke="#C5D9E8" stroke-width="2"/>
+  <line x1="22" y1="34" x2="38" y2="34" stroke="#C5D9E8" stroke-width="2"/>
+  <line x1="22" y1="40" x2="40" y2="40" stroke="#C5D9E8" stroke-width="2"/>
+  <!-- Star -->
+  <polygon points="50,8 52,14 58,14 53,18 55,24 50,20 45,24 47,18 42,14 48,14" fill="#FFCC00" stroke="#FF9900" stroke-width="1"/>
+</svg>

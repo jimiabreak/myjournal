@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Background circle -->
+  <circle cx="32" cy="32" r="30" fill="#C5D9E8" stroke="#6699CC" stroke-width="2"/>
+  <!-- Envelope -->
+  <rect x="12" y="22" width="32" height="24" fill="#FFFFFF" stroke="#6699CC" stroke-width="2"/>
+  <polyline points="12,22 28,36 44,22" fill="none" stroke="#6699CC" stroke-width="2"/>
+  <!-- IM bubble -->
+  <rect x="40" y="12" width="16" height="12" rx="2" fill="#4A6B8A"/>
+  <polygon points="42,24 46,24 44,28" fill="#4A6B8A"/>
+  <text x="48" y="20" text-anchor="middle" font-size="8" fill="#FFFFFF">IM</text>
+  <!-- SMS indicator -->
+  <circle cx="52" cy="42" r="8" fill="#6699CC"/>
+  <text x="52" y="45" text-anchor="middle" font-size="7" fill="#FFFFFF">@</text>
+</svg>

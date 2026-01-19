@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Background circle -->
+  <circle cx="32" cy="32" r="30" fill="#C5D9E8" stroke="#6699CC" stroke-width="2"/>
+  <!-- Person 1 (left) -->
+  <circle cx="20" cy="22" r="6" fill="#6699CC"/>
+  <path d="M12 42 Q12 32 20 32 Q28 32 28 42" fill="#6699CC"/>
+  <!-- Person 2 (right) -->
+  <circle cx="44" cy="22" r="6" fill="#4A6B8A"/>
+  <path d="M36 42 Q36 32 44 32 Q52 32 52 42" fill="#4A6B8A"/>
+  <!-- Speech bubbles -->
+  <ellipse cx="32" cy="50" rx="12" ry="6" fill="#FFFFFF" stroke="#6699CC" stroke-width="1"/>
+  <text x="32" y="53" text-anchor="middle" font-size="8" fill="#6699CC">...</text>
+</svg>
