@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { getProfile, updateProfile } from '@/lib/actions/profile';
+import { getProfile, updateProfile, uploadUserpic, deleteUserpic } from '@/lib/actions/profile';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -113,51 +113,45 @@ export default function EditProfilePage() {
     }
   };
 
-  const uploadUserpic = async () => {
+  const handleUploadUserpic = async () => {
     if (!userpicFile) return;
 
     setUploadingUserpic(true);
-    const formDataObj = new FormData();
-    formDataObj.append('userpic', userpicFile);
+    setErrors({});
 
     try {
-      const response = await fetch('/api/upload/userpic', {
-        method: 'POST',
-        body: formDataObj,
-      });
+      const formDataObj = new FormData();
+      formDataObj.append('userpic', userpicFile);
 
-      const result = await response.json();
+      const result = await uploadUserpic(formDataObj);
 
       if (result.success) {
-        setUser(prev => prev ? { ...prev, userpicUrl: result.userpicUrl } : null);
+        setUser(prev => prev ? { ...prev, userpicUrl: result.userpicUrl! } : null);
         setUserpicFile(null);
         setUserpicPreview(null);
         setSuccessMessage('Userpic uploaded successfully!');
       } else {
-        setErrors({ userpic: result.error });
+        setErrors({ userpic: result.error || 'Upload failed' });
       }
-    } catch {
+    } catch (error) {
+      console.error('Upload error:', error);
       setErrors({ userpic: 'Failed to upload userpic' });
     } finally {
       setUploadingUserpic(false);
     }
   };
 
-  const deleteUserpic = async () => {
+  const handleDeleteUserpic = async () => {
     if (!confirm('Are you sure you want to delete your userpic?')) return;
 
     try {
-      const response = await fetch('/api/upload/userpic', {
-        method: 'DELETE',
-      });
-
-      const result = await response.json();
+      const result = await deleteUserpic();
 
       if (result.success) {
         setUser(prev => prev ? { ...prev, userpicUrl: null } : null);
         setSuccessMessage('Userpic deleted successfully!');
       } else {
-        setErrors({ userpic: result.error });
+        setErrors({ userpic: result.error || 'Delete failed' });
       }
     } catch {
       setErrors({ userpic: 'Failed to delete userpic' });
@@ -306,7 +300,7 @@ export default function EditProfilePage() {
                 {userpicFile && (
                   <button
                     type="button"
-                    onClick={uploadUserpic}
+                    onClick={handleUploadUserpic}
                     disabled={uploadingUserpic}
                     className="lj-button lj-button-primary"
                     style={{ marginLeft: '8px' }}
@@ -318,7 +312,7 @@ export default function EditProfilePage() {
                 {user.userpicUrl && !userpicFile && (
                   <button
                     type="button"
-                    onClick={deleteUserpic}
+                    onClick={handleDeleteUserpic}
                     className="lj-button"
                     style={{ marginLeft: '8px' }}
                   >

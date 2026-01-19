@@ -1,6 +1,8 @@
 'use server';
 
 import { z } from 'zod';
+import fs from 'fs/promises';
+import path from 'path';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser } from '@/lib/auth';
 import { revalidatePath } from 'next/cache';
@@ -254,5 +256,127 @@ export async function toggleFollow(targetUserId: string) {
   } catch (error) {
     console.error('Toggle follow error:', error);
     return { error: 'Failed to update follow status' };
+  }
+}
+
+// Userpic upload server action
+export async function uploadUserpic(formData: FormData) {
+  try {
+    const user = await getCurrentUser();
+    if (!user) {
+      return { error: 'Authentication required' };
+    }
+
+    const file = formData.get('userpic') as File;
+    if (!file) {
+      return { error: 'No file provided' };
+    }
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+    if (!allowedTypes.includes(file.type)) {
+      return { error: 'Only JPEG, PNG, and GIF files are allowed' };
+    }
+
+    // Validate file size (2MB max)
+    if (file.size > 2 * 1024 * 1024) {
+      return { error: 'File size must be less than 2MB' };
+    }
+
+    // Generate filename
+    const ext = path.extname(file.name);
+    const fileName = `${user.id}-${Date.now()}${ext}`;
+    const uploadDir = path.join(process.cwd(), 'public', 'userpics');
+    const filePath = path.join(uploadDir, fileName);
+
+    // Ensure upload directory exists
+    try {
+      await fs.access(uploadDir);
+    } catch {
+      await fs.mkdir(uploadDir, { recursive: true });
+    }
+
+    // Write file
+    const buffer = Buffer.from(await file.arrayBuffer());
+    await fs.writeFile(filePath, buffer);
+
+    // Get current userpic to delete
+    const currentUser = await prisma.user.findUnique({
+      where: { id: user.id },
+      select: { userpicUrl: true }
+    });
+
+    // Delete old userpic if exists
+    if (currentUser?.userpicUrl) {
+      const oldFileName = currentUser.userpicUrl.match(/\/userpics\/(.+)$/)?.[1];
+      if (oldFileName) {
+        const oldPath = path.join(uploadDir, oldFileName);
+        try {
+          await fs.unlink(oldPath);
+        } catch {
+          // Ignore if file doesn't exist
+        }
+      }
+    }
+
+    // Update user with new userpic URL
+    const newUserpicUrl = `/userpics/${fileName}`;
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { userpicUrl: newUserpicUrl }
+    });
+
+    revalidatePath('/profile');
+    revalidatePath(`/profile/${user.username}`);
+    return { success: true, userpicUrl: newUserpicUrl };
+
+  } catch (error) {
+    console.error('Upload userpic error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    return { error: `Failed to upload userpic: ${errorMessage}` };
+  }
+}
+
+// Userpic delete server action
+export async function deleteUserpic() {
+  try {
+    const user = await getCurrentUser();
+    if (!user) {
+      return { error: 'Authentication required' };
+    }
+
+    // Get current userpic
+    const currentUser = await prisma.user.findUnique({
+      where: { id: user.id },
+      select: { userpicUrl: true }
+    });
+
+    // Delete file if exists
+    if (currentUser?.userpicUrl) {
+      const fileName = currentUser.userpicUrl.match(/\/userpics\/(.+)$/)?.[1];
+      if (fileName) {
+        const uploadDir = path.join(process.cwd(), 'public', 'userpics');
+        const filePath = path.join(uploadDir, fileName);
+        try {
+          await fs.unlink(filePath);
+        } catch {
+          // Ignore if file doesn't exist
+        }
+      }
+    }
+
+    // Clear userpic URL
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { userpicUrl: null }
+    });
+
+    revalidatePath('/profile');
+    revalidatePath(`/profile/${user.username}`);
+    return { success: true };
+
+  } catch (error) {
+    console.error('Delete userpic error:', error);
+    return { error: 'Failed to delete userpic' };
   }
 }

@@ -1,11 +1,24 @@
 'use client';
 
-import { SignedIn, SignedOut, UserButton, useUser } from '@clerk/nextjs';
+import { SignedIn, SignedOut, useUser } from '@clerk/nextjs';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useEffect, useState } from 'react';
+import { getProfile } from '@/lib/actions/profile';
 
 export function TopBar() {
   const { user, isLoaded } = useUser();
+  const [dbUserpic, setDbUserpic] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isLoaded && user) {
+      getProfile().then((result) => {
+        if (result.user?.userpicUrl) {
+          setDbUserpic(result.user.userpicUrl);
+        }
+      });
+    }
+  }, [isLoaded, user]);
 
   return (
     <>
@@ -49,35 +62,38 @@ export function TopBar() {
                           alt=""
                           width={16}
                           height={16}
-                          style={{ display: 'inline', verticalAlign: 'middle', marginRight: '2px', filter: 'brightness(0) invert(1)' }}
+                          style={{ display: 'inline', verticalAlign: 'middle', marginRight: '2px' }}
                         />
                         {user?.username || user?.firstName || 'User'}
                       </Link>
                     </span>
                     <span style={{ color: '#99BBDD' }}>|</span>
-                    <UserButton
-                      appearance={{
-                        elements: {
-                          avatarBox: 'w-6 h-6',
-                        },
-                      }}
-                    />
+                    <Link href="/profile" style={{ display: 'flex', alignItems: 'center' }}>
+                      {dbUserpic ? (
+                        /* eslint-disable-next-line @next/next/no-img-element */
+                        <img
+                          src={dbUserpic}
+                          alt="Your userpic"
+                          style={{ width: '28px', height: '28px', objectFit: 'cover', border: '1px solid #99BBDD' }}
+                        />
+                      ) : (
+                        <Image
+                          src="/icons/userinfo.svg"
+                          alt="Profile"
+                          width={28}
+                          height={28}
+                        />
+                      )}
+                    </Link>
                   </div>
                 </SignedIn>
                 <SignedOut>
                   <div className="flex items-center gap-2" style={{ fontSize: '10px' }}>
-                    <span style={{ color: 'white' }}>Username:</span>
-                    <input
-                      type="text"
-                      style={{ width: '80px', padding: '1px 3px', fontSize: '10px' }}
-                    />
-                    <span style={{ color: 'white' }}>Password:</span>
-                    <input
-                      type="password"
-                      style={{ width: '80px', padding: '1px 3px', fontSize: '10px' }}
-                    />
-                    <Link href="/login" className="lj-button-yellow" style={{ padding: '1px 8px', fontSize: '10px' }}>
-                      Login?
+                    <Link href="/login" className="lj-button-yellow" style={{ padding: '2px 10px', fontSize: '10px' }}>
+                      Login
+                    </Link>
+                    <Link href="/signup" style={{ color: 'white', textDecoration: 'underline', fontSize: '10px' }}>
+                      Create Account
                     </Link>
                   </div>
                 </SignedOut>

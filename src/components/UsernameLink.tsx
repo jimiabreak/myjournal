@@ -6,6 +6,7 @@ type Props = {
   displayName?: string;
   showIcon?: boolean;
   className?: string;
+  style?: React.CSSProperties;
 };
 
 export function UsernameLink({
@@ -13,9 +14,10 @@ export function UsernameLink({
   displayName,
   showIcon = true,
   className = '',
+  style,
 }: Props) {
   return (
-    <Link href={`/journal/${username}`} className={`username-link ${className}`.trim()}>
+    <Link href={`/journal/${username}`} className={`username-link ${className}`.trim()} style={style}>
       {showIcon && (
         <Image
           src="/icons/userinfo.svg"

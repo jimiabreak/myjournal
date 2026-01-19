@@ -2,11 +2,24 @@
 
 import Link from 'next/link';
 import { useUser } from '@clerk/nextjs';
+import { useEffect, useState } from 'react';
 import { Userpic } from './Userpic';
 import { UsernameLink } from './UsernameLink';
+import { getProfile } from '@/lib/actions/profile';
 
 export function UserSidebar() {
   const { user, isSignedIn } = useUser();
+  const [dbUser, setDbUser] = useState<{ userpicUrl: string | null; displayName: string } | null>(null);
+
+  useEffect(() => {
+    if (isSignedIn) {
+      getProfile().then((result) => {
+        if (result.user) {
+          setDbUser({ userpicUrl: result.user.userpicUrl, displayName: result.user.displayName });
+        }
+      });
+    }
+  }, [isSignedIn]);
 
   if (!isSignedIn) {
     // Show welcome box for logged out users
@@ -33,8 +46,8 @@ export function UserSidebar() {
   }
 
   const username = user?.username || user?.id;
-  const displayName = user?.firstName
-    ? `${user.firstName}${user.lastName ? ' ' + user.lastName : ''}`
+  const displayName = dbUser?.displayName || user?.firstName
+    ? `${user?.firstName}${user?.lastName ? ' ' + user.lastName : ''}`
     : user?.username || 'User';
 
   return (
@@ -45,21 +58,22 @@ export function UserSidebar() {
           {/* Userpic */}
           <div style={{ flexShrink: 0 }}>
             <Userpic
-              src={user?.imageUrl}
+              src={dbUser?.userpicUrl || user?.imageUrl}
               alt={`${displayName}'s userpic`}
               size="large"
             />
           </div>
 
           {/* User Info */}
-          <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
             <div style={{ marginBottom: '4px' }}>
               <UsernameLink
                 username={username}
                 displayName={displayName}
                 className="font-bold text-small"
+                style={{ wordBreak: 'break-word' }}
               />
-              <p className="text-tiny" style={{ color: 'var(--lj-text-gray)' }}>
+              <p className="text-tiny" style={{ color: 'var(--lj-text-gray)', wordBreak: 'break-word' }}>
                 @{username}
               </p>
             </div>

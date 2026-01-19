@@ -51,7 +51,6 @@ export default async function ProfileViewPage({ params }: Props) {
               alt=""
               width={16}
               height={16}
-              style={{ filter: 'brightness(0) invert(1)' }}
             />
             <h1 style={{ margin: 0 }}>{user.displayName}</h1>
           </div>
@@ -123,116 +122,110 @@ export default async function ProfileViewPage({ params }: Props) {
 
       {/* Basic Info Section */}
       {(user.name || user.birthday || user.location || user.website || user.contactEmail) && (
-        <div className="lj-box">
-          <CollapsibleSection title="Basic Info" defaultOpen>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-              <div>
-                {user.name && (
-                  <div className="text-small" style={{ marginBottom: '6px' }}>
-                    <strong>Name:</strong> {user.name}
-                  </div>
-                )}
-                {birthdayFormatted && (
-                  <div className="text-small" style={{ marginBottom: '6px' }}>
-                    <strong>Birthday:</strong> {birthdayFormatted}
-                  </div>
-                )}
-                {user.location && (
-                  <div className="text-small" style={{ marginBottom: '6px' }}>
-                    <strong>Location:</strong> {user.location}
-                  </div>
-                )}
-                {user.website && (
-                  <div className="text-small" style={{ marginBottom: '6px' }}>
-                    <strong>Website:</strong>{' '}
-                    <a href={user.website} target="_blank" rel="noopener noreferrer">
-                      {user.website}
-                    </a>
-                  </div>
-                )}
-              </div>
-              <div>
-                {user.contactEmail && (
-                  <div className="text-small" style={{ marginBottom: '6px' }}>
-                    <strong>Contact:</strong>{' '}
-                    <a href={`mailto:${user.contactEmail}`}>{user.contactEmail}</a>
-                  </div>
-                )}
-              </div>
+        <CollapsibleSection title="Basic Info" defaultOpen>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+            <div>
+              {user.name && (
+                <div className="text-small" style={{ marginBottom: '6px' }}>
+                  <strong>Name:</strong> {user.name}
+                </div>
+              )}
+              {birthdayFormatted && (
+                <div className="text-small" style={{ marginBottom: '6px' }}>
+                  <strong>Birthdate:</strong> {birthdayFormatted}
+                </div>
+              )}
+              {user.location && (
+                <div className="text-small" style={{ marginBottom: '6px' }}>
+                  <strong>Location:</strong> {user.location}
+                </div>
+              )}
+              {user.website && (
+                <div className="text-small" style={{ marginBottom: '6px' }}>
+                  <strong>Website:</strong>{' '}
+                  <a href={user.website} target="_blank" rel="noopener noreferrer">
+                    {user.website}
+                  </a>
+                </div>
+              )}
             </div>
-          </CollapsibleSection>
-        </div>
+            <div>
+              {user.contactEmail && (
+                <div className="text-small" style={{ marginBottom: '6px' }}>
+                  <strong>Contact:</strong>{' '}
+                  <a href={`mailto:${user.contactEmail}`}>{user.contactEmail}</a>
+                </div>
+              )}
+            </div>
+          </div>
+        </CollapsibleSection>
       )}
 
       {/* Bio Section */}
       {user.bio && (
-        <div className="lj-box">
-          <CollapsibleSection title="Bio" defaultOpen>
-            <div className="text-small lj-prose" style={{ whiteSpace: 'pre-wrap' }}>
-              {user.bio}
-            </div>
-          </CollapsibleSection>
-        </div>
+        <CollapsibleSection title="Bio" defaultOpen>
+          <div className="text-small lj-prose" style={{ whiteSpace: 'pre-wrap' }}>
+            {user.bio}
+          </div>
+        </CollapsibleSection>
       )}
 
       {/* Connect Section */}
       {hasSocialLinks && (
-        <div className="lj-box">
-          <CollapsibleSection title="Connect" defaultOpen>
-            <div className="text-small">
-              {user.socialLinks?.twitter && (
-                <div style={{ marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span style={{ fontWeight: 'bold', width: '70px' }}>Twitter/X:</span>
-                  <a
-                    href={`https://twitter.com/${user.socialLinks.twitter}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    @{user.socialLinks.twitter}
-                  </a>
-                </div>
-              )}
-              {user.socialLinks?.instagram && (
-                <div style={{ marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span style={{ fontWeight: 'bold', width: '70px' }}>Instagram:</span>
-                  <a
-                    href={`https://instagram.com/${user.socialLinks.instagram}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    @{user.socialLinks.instagram}
-                  </a>
-                </div>
-              )}
-              {user.socialLinks?.bluesky && (
-                <div style={{ marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span style={{ fontWeight: 'bold', width: '70px' }}>Bluesky:</span>
-                  <a
-                    href={`https://bsky.app/profile/${user.socialLinks.bluesky}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    @{user.socialLinks.bluesky}
-                  </a>
-                </div>
-              )}
-              {user.socialLinks?.customUrl && (
-                <div style={{ marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span style={{ fontWeight: 'bold', width: '70px' }}>
-                    {user.socialLinks.customLabel || 'Link'}:
-                  </span>
-                  <a
-                    href={user.socialLinks.customUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {user.socialLinks.customUrl}
-                  </a>
-                </div>
-              )}
-            </div>
-          </CollapsibleSection>
-        </div>
+        <CollapsibleSection title="Connect" defaultOpen>
+          <div className="text-small">
+            {user.socialLinks?.twitter && (
+              <div style={{ marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ fontWeight: 'bold', width: '70px' }}>Twitter/X:</span>
+                <a
+                  href={`https://twitter.com/${user.socialLinks.twitter}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  @{user.socialLinks.twitter}
+                </a>
+              </div>
+            )}
+            {user.socialLinks?.instagram && (
+              <div style={{ marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ fontWeight: 'bold', width: '70px' }}>Instagram:</span>
+                <a
+                  href={`https://instagram.com/${user.socialLinks.instagram}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  @{user.socialLinks.instagram}
+                </a>
+              </div>
+            )}
+            {user.socialLinks?.bluesky && (
+              <div style={{ marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ fontWeight: 'bold', width: '70px' }}>Bluesky:</span>
+                <a
+                  href={`https://bsky.app/profile/${user.socialLinks.bluesky}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  @{user.socialLinks.bluesky}
+                </a>
+              </div>
+            )}
+            {user.socialLinks?.customUrl && (
+              <div style={{ marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ fontWeight: 'bold', width: '70px' }}>
+                  {user.socialLinks.customLabel || 'Link'}:
+                </span>
+                <a
+                  href={user.socialLinks.customUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {user.socialLinks.customUrl}
+                </a>
+              </div>
+            )}
+          </div>
+        </CollapsibleSection>
       )}
 
       {/* Footer */}
