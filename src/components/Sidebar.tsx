@@ -4,7 +4,13 @@ import Link from 'next/link';
 import { getStats } from '@/lib/actions/stats';
 
 export async function Sidebar() {
-  const stats = await getStats();
+  // Fetch stats with fallback for build time when DB isn't available
+  let stats = { totalUsers: 0, activeUsers: 0, postsPerHour: 0, postsPerMinute: 0 };
+  try {
+    stats = await getStats();
+  } catch {
+    // Use default values during build
+  }
 
   return (
     <div className="lj-sidebar">
